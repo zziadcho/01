@@ -1,4 +1,4 @@
-package reloaded
+package common
 
 import "strings"
 

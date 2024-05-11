@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"io"
 	"os"
-	reloaded "reloaded/functions"
+	"common"
 	"strings"
-	//"reloaded/functions"
 )
 
 func main() {
@@ -54,15 +53,10 @@ func main() {
 			fmt.Println("the flag cannot be the first element")
 		}
 	}
-	// targeting flags with regexp
-	hexFlag :=
-	binFlag :=
-	upFlag :=
-	lowFlag :=
-	capFlag :=
-	for i, element := range contentSplit{
-
-	}
+	common.ToHex("1e1e")
+	// for i, element := range contentSplit{
+		
+	// }
 
 
 }

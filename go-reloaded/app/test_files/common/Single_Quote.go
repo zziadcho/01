@@ -1,8 +1,8 @@
-package reloaded
+package common
 
 import "strings"
 
-func AA(s string) bool {
+func Regulation(s string) bool {
 	exceptions := "aeuioh"
 	if len(s) > 0 {
 		firstLetter := strings.ToLower(string(s[0]))
