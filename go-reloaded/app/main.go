@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"common"
 	"strings"
+    "01/go-reloaded/common/variables"
 )
 
 func main() {
@@ -53,9 +53,8 @@ func main() {
 			fmt.Println("the flag cannot be the first element")
 		}
 	}
-	common.ToHex("1e1e")
 	// for i, element := range contentSplit{
-		
+    fmt.Println(variables.HexFlagMulti)
 	// }
 
 
