@@ -44,47 +44,103 @@ func main() {
 
 	// Converting input file to a string and splitting it into an array
 	contentString := string(content)
-	contentSplit :=  []string{}
-	contentSplit = append(contentSplit, contentString)
+	contentSplit := strings.Split(contentString, " ")
+	// contentSplit := strings.Split(contentString, " ")
 
-	// Text Processing
+	/* Text Processing */
+	fmt.Println(" ")
 	for i, element := range contentSplit {
 		switch {
-		case variables.HexFlag.MatchString(element):
-			convertedWord := strconv.Itoa(functions.ToHex(contentSplit[i-1]))
-			contentSplit[i-1] = convertedWord
 
+		/////////////// hex ///////////////
+		case variables.HexFlag.MatchString(element):
+			index := strings.Index(element, variables.HexFlag.FindString(element))
+			if index != -1 && index > 0 {
+				wordBefore := element[:index]
+				convertedWord := strconv.Itoa(functions.ToHex(wordBefore))
+				contentSplit[i] = convertedWord + element[index:]
+			}
+
+			/////////////// bin ///////////////
 		case variables.BinFlag.MatchString(element):
 			convertedWord := strconv.Itoa(functions.ToBin(contentSplit[i-1]))
 			contentSplit[i-1] = convertedWord
 
+			/////////////// up ///////////////
 		case variables.UpFlag.MatchString(element):
 			convertedWord := functions.ToUpper(contentSplit[i-1])
 			contentSplit[i-1] = convertedWord
 
-		case variables.UpFlagMulti.MatchString(element):
-			UpFlagNumberMatch := variables.UpFlagMulti.FindStringSubmatch(element)
-			if len(UpFlagNumberMatch) > 1 {
-			  UpFlagNumber, _ := strconv.Atoi(UpFlagNumberMatch[1])
-			  fmt.Println(UpFlagNumber)
-			
-			if i-UpFlagNumber >= 0 && UpFlagNumber > 0 {
-				for j := i - UpFlagNumber; j < i; j++ {
-					contentSplit[j] = functions.ToUpper(contentSplit[j])
-				}
-			}
-		}
+			/////////////// low ///////////////
 		case variables.LowFlag.MatchString(element):
 			convertedWord := functions.ToLower(contentSplit[i-1])
 			contentSplit[i-1] = convertedWord
 
+			/////////////// cap ///////////////
 		case variables.CapFlag.MatchString(element):
+			convertedWord := functions.Capitalize(contentSplit[i-1])
+			contentSplit[i-1] = convertedWord
+
+			/////////////// multiple up ///////////////
+		case variables.UpFlagMulti.MatchString(element):
+			multipiler := contentSplit[i+1]
+			multipiler = strings.TrimRight(multipiler, ")")
+			multipilerInt, err := strconv.Atoi(multipiler)
+			if err != nil {
+				fmt.Println("there was a problem converting the Up multiplier to integer:", err)
+				continue
+			}
+			if multipilerInt <= 0 || i-multipilerInt < 0 {
+				fmt.Println("the Up multiplier is out of range, lower it to fix the problem")
+				continue
+			}
+			for j := i - multipilerInt; j < i; j++ {
+				contentSplit[j] = functions.ToUpper(contentSplit[j])
+			}
+			convertedWord := functions.ToUpper(contentSplit[i-1])
+			contentSplit[i-1] = convertedWord
+
+			/////////////// multiple low ///////////////
+		case variables.LowFlagMulti.MatchString(element):
+			multipiler := contentSplit[i+1]
+			multipiler = strings.TrimRight(multipiler, ")")
+			multipilerInt, err := strconv.Atoi(multipiler)
+			if err != nil {
+				fmt.Println("there was a problem converting the Low multiplier to integer:", err)
+				continue
+			}
+			if multipilerInt <= 0 || i-multipilerInt < 0 {
+				fmt.Println("the Low multiplier is out of range, lower it to fix the problem")
+				continue
+			}
+			for j := i - multipilerInt; j < i; j++ {
+				contentSplit[j] = functions.ToLower(contentSplit[j])
+			}
+			convertedWord := functions.ToLower(contentSplit[i-1])
+			contentSplit[i-1] = convertedWord
+
+			/////////////// multiple cap ///////////////
+		case variables.CapFlagMulti.MatchString(element):
+			multipiler := contentSplit[i+1]
+			multipiler = strings.TrimRight(multipiler, ")")
+			multipilerInt, err := strconv.Atoi(multipiler)
+			if err != nil {
+				fmt.Println("there was a problem converting the Cap multiplier to integer:", err)
+				continue
+			}
+			if multipilerInt <= 0 || i-multipilerInt < 0 {
+				fmt.Println("the Cap multiplier is out of range, lower it to fix the problem")
+				continue
+			}
+			for j := i - multipilerInt; j < i; j++ {
+				contentSplit[j] = functions.Capitalize(contentSplit[j])
+			}
 			convertedWord := functions.Capitalize(contentSplit[i-1])
 			contentSplit[i-1] = convertedWord
 		}
 	}
 
-	// Finalization
+	/* Finalization */
 	contentFinal := []string{}
 	for _, element := range contentSplit {
 		if element != "" {
@@ -108,5 +164,5 @@ func main() {
 		return
 	}
 
-	fmt.Print("Processing completed successfully")
+	fmt.Println("text has been converted, check result.txt")
 }
