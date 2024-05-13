@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-func handlePunctuation(text []string) []string {
+func HandlePunctuation(text []string) []string {
 	textJoin := strings.Join(text, " ")
 	target := regexp.MustCompile(`\s*([.,!?:;])`)
 	textJoin = target.ReplaceAllString(textJoin, "$1")

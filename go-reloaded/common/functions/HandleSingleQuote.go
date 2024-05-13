@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-func handleSingleQuote(text []string) []string {
+func HandleSingleQuote(text []string) []string {
 	textJoined := strings.Join(text, " ")
 
 	replaceSingleQuotes := regexp.MustCompile(`([a-zA-Z]+)'([a-zA-Z]{1}\s)(\w*)`)
