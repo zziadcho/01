@@ -52,14 +52,10 @@ func main() {
 	for i, element := range contentSplit {
 		switch {
 
-		/////////////// hex ///////////////
+			/////////////// hex ///////////////
 		case variables.HexFlag.MatchString(element):
-			index := strings.Index(element, variables.HexFlag.FindString(element))
-			if index != -1 && index > 0 {
-				wordBefore := element[:index]
-				convertedWord := strconv.Itoa(functions.ToHex(wordBefore))
-				contentSplit[i] = convertedWord + element[index:]
-			}
+			convertedWord := strconv.Itoa(functions.ToHex(contentSplit[i-1]))
+			contentSplit[i-1] = convertedWord
 
 			/////////////// bin ///////////////
 		case variables.BinFlag.MatchString(element):
@@ -139,6 +135,15 @@ func main() {
 			contentSplit[i-1] = convertedWord
 		}
 	}
+
+	/////////////// punctuation ///////////////
+	functions.HandlePunctuation(contentSplit)
+
+	/////////////// single quotes ///////////////
+	functions.HandleSingleQuote(contentSplit)
+
+	/////////////// definite/indefinite articles ///////////////
+	functions.CorrectArticles(contentSplit)
 
 	/* Finalization */
 	contentFinal := []string{}
