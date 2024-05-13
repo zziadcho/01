@@ -1,12 +1,16 @@
 package functions
 
-import "strings"
+import (
+	"regexp"
+	"strings"
+)
 
-func AA(s string) bool {
-	exceptions := "aeuioh"
-	if len(s) > 0 {
-		firstLetter := strings.ToLower(string(s[0]))
-		return strings.ContainsAny(firstLetter, exceptions)
-	}
-	return false
+func handlePunctuation(text []string) []string {
+	textJoin := strings.Join(text, " ")
+	target := regexp.MustCompile(`\s*([.,!?:;])`)
+	textJoin = target.ReplaceAllString(textJoin, "$1")
+	target = regexp.MustCompile(`\s*([.,!?:;]+)\s*`)
+	textJoin = target.ReplaceAllString(textJoin, "$1           ")
+	last := strings.Fields(textJoin)
+	return last
 }
