@@ -10,7 +10,7 @@ var (
     LowFlag = regexp.MustCompile(`\(low\)`)
     CapFlag = regexp.MustCompile(`\(cap\)`)
     // multi flags
-    UpFlagMulti  = regexp.MustCompile(`\(up,\s+(\d+)\)`)
-    LowFlagMulti = regexp.MustCompile(`\(low,\s+(\d+)\)`)
-    CapFlagMulti = regexp.MustCompile(`\(cap,\s+(\d+)\)`)
+    UpFlagMulti  = regexp.MustCompile(`\(up,`)
+    LowFlagMulti = regexp.MustCompile(`\(low,`)
+    CapFlagMulti = regexp.MustCompile(`\(cap,`)
 )
