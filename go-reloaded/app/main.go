@@ -52,7 +52,7 @@ func main() {
 	for i, element := range contentSplit {
 		switch {
 
-			/////////////// hex ///////////////
+		/////////////// hex ///////////////
 		case variables.HexFlag.MatchString(element):
 			convertedWord := strconv.Itoa(functions.ToHex(contentSplit[i-1]))
 			contentSplit[i-1] = convertedWord
@@ -79,82 +79,98 @@ func main() {
 
 			/////////////// multiple up ///////////////
 		case variables.UpFlagMulti.MatchString(element):
-			multipiler := contentSplit[i+1]
-			multipiler = strings.TrimRight(multipiler, ")")
-			multipilerInt, err := strconv.Atoi(multipiler)
-			if err != nil {
-				fmt.Println("there was a problem converting the Up multiplier to integer:", err)
-				continue
+			if i+1 < len(contentSplit) {
+				multiplier := contentSplit[i+1]
+				multiplier = strings.TrimSuffix(multiplier, ")")
+				multiplierInt, err := strconv.Atoi(multiplier)
+				if err != nil {
+					fmt.Println("there was a problem converting the Cap multiplier to integer, correct flag syntax is (up, number):\n", err)
+					continue
+				}
+				if multiplierInt <= 0 || i-multiplierInt < 0 {
+					fmt.Println("the Up multiplier is out of range, lower it to fix the problem")
+					continue
+				}
+				for j := i - multiplierInt; j < i; j++ {
+					contentSplit[j] = functions.ToUpper(contentSplit[j])
+				}
+				convertedWord := functions.ToUpper(contentSplit[i-1])
+				contentSplit[i-1] = convertedWord
+				contentSplit[i+1] = ""
 			}
-			if multipilerInt <= 0 || i-multipilerInt < 0 {
-				fmt.Println("the Up multiplier is out of range, lower it to fix the problem")
-				continue
-			}
-			for j := i - multipilerInt; j < i; j++ {
-				contentSplit[j] = functions.ToUpper(contentSplit[j])
-			}
-			convertedWord := functions.ToUpper(contentSplit[i-1])
-			contentSplit[i-1] = convertedWord
 
 			/////////////// multiple low ///////////////
 		case variables.LowFlagMulti.MatchString(element):
-			multipiler := contentSplit[i+1]
-			multipiler = strings.TrimRight(multipiler, ")")
-			multipilerInt, err := strconv.Atoi(multipiler)
-			if err != nil {
-				fmt.Println("there was a problem converting the Low multiplier to integer:", err)
-				continue
+			if i+1 < len(contentSplit) {
+				multiplier := contentSplit[i+1]
+				multiplier = strings.TrimSuffix(multiplier, ")")
+				multiplierInt, err := strconv.Atoi(multiplier)
+				if err != nil {
+					fmt.Println("there was a problem converting the Cap multiplier to integer, correct flag syntax is (low, number):\n", err)
+					continue
+				}
+				if multiplierInt <= 0 || i-multiplierInt < 0 {
+					fmt.Println("the Low multiplier is out of range, lower it to fix the problem")
+					continue
+				}
+				for j := i - multiplierInt; j < i; j++ {
+					contentSplit[j] = functions.ToLower(contentSplit[j])
+				}
+				convertedWord := functions.ToLower(contentSplit[i-1])
+				contentSplit[i-1] = convertedWord
+				contentSplit[i+1] = ""
 			}
-			if multipilerInt <= 0 || i-multipilerInt < 0 {
-				fmt.Println("the Low multiplier is out of range, lower it to fix the problem")
-				continue
-			}
-			for j := i - multipilerInt; j < i; j++ {
-				contentSplit[j] = functions.ToLower(contentSplit[j])
-			}
-			convertedWord := functions.ToLower(contentSplit[i-1])
-			contentSplit[i-1] = convertedWord
 
 			/////////////// multiple cap ///////////////
 		case variables.CapFlagMulti.MatchString(element):
-			multipiler := contentSplit[i+1]
-			multipiler = strings.TrimRight(multipiler, ")")
-			multipilerInt, err := strconv.Atoi(multipiler)
-			if err != nil {
-				fmt.Println("there was a problem converting the Cap multiplier to integer:", err)
-				continue
+			if i+1 < len(contentSplit) {
+				multiplier := contentSplit[i+1]
+				multiplier = strings.TrimSuffix(multiplier, ")")
+				multiplierInt, err := strconv.Atoi(multiplier)
+				if err != nil {
+					fmt.Println("there was a problem converting the Cap multiplier to integer, correct flag syntax is (cap, number):\n", err)
+					continue
+				}
+				if multiplierInt <= 0 || i-multiplierInt < 0 {
+					fmt.Println("the Cap multiplier is out of range, lower it to fix the problem")
+					continue
+				}
+				for j := i - multiplierInt; j < i; j++ {
+					contentSplit[j] = functions.Capitalize(contentSplit[j])
+				}
+				convertedWord := functions.Capitalize(contentSplit[i-1])
+				contentSplit[i-1] = convertedWord
+				contentSplit[i+1] = ""
 			}
-			if multipilerInt <= 0 || i-multipilerInt < 0 {
-				fmt.Println("the Cap multiplier is out of range, lower it to fix the problem")
-				continue
-			}
-			for j := i - multipilerInt; j < i; j++ {
-				contentSplit[j] = functions.Capitalize(contentSplit[j])
-			}
-			convertedWord := functions.Capitalize(contentSplit[i-1])
-			contentSplit[i-1] = convertedWord
 		}
 	}
 
-	/////////////// punctuation ///////////////
-	functions.HandlePunctuation(contentSplit)
-
-	/////////////// single quotes ///////////////
-	functions.HandleSingleQuote(contentSplit)
-
 	/////////////// definite/indefinite articles ///////////////
-	functions.CorrectArticles(contentSplit)
+	articleRegulation := functions.AdjustArticles(contentSplit)
+
+	/////////////// regulation of single quotes ///////////////
+	singleQuoteRegulation := functions.HandleSingleQuote(articleRegulation)
+
+	/////////////////  regulation of punctuation ///////////////
+	punctuationRegulation := functions.HandlePunctuation(singleQuoteRegulation)
 
 	/* Finalization */
+	
+	// clean up
+	contentRejoin := strings.Join(punctuationRegulation, " ")
+	contentProcessed := functions.RemoveFlagSuffixes(contentRejoin)
+
+	// split the processed text into words
 	contentFinal := []string{}
-	for _, element := range contentSplit {
+	for _, element := range strings.Split(contentProcessed, " ") {
 		if element != "" {
 			contentFinal = append(contentFinal, element)
 		}
 	}
-	contentRejoin := strings.Join(contentFinal, " ")
 
-	// Creating output file
+	cleanedText := strings.Join(contentFinal, " ")
+
+	// creating output file
 	outputFileCreate, err := os.Create(outputFile)
 	if err != nil {
 		fmt.Println("Error creating the output file:", err)
@@ -162,12 +178,12 @@ func main() {
 	}
 	defer outputFileCreate.Close()
 
-	// Writing into output file
-	_, err = io.WriteString(outputFileCreate, contentRejoin)
+	// writing into output file
+	_, err = io.WriteString(outputFileCreate, cleanedText)
 	if err != nil {
 		fmt.Println("Error writing into the output file:", err)
 		return
 	}
 
-	fmt.Println("text has been converted, check result.txt")
+	fmt.Println("Text has been converted, check result.txt")
 }
