@@ -149,23 +149,24 @@ func main() {
 		}
 	}
 
+	contentProcessed := functions.RemoveFlagSuffixes(strings.Join(contentSplit, " "))
+
 	/////////////// definite/indefinite articles ///////////////
-	articleRegulation := functions.AdjustArticles(contentSplit)
+	articleRegulation := functions.AdjustArticles(strings.Split(contentProcessed, " "))
 
 	/////////////// regulation of single quotes ///////////////
-	singleQuoteRegulation := functions.HandleSingleQuote(articleRegulation)
+	punctuationRegulation := functions.HandlePunctuation(articleRegulation)
 
 	/////////////////  regulation of punctuation ///////////////
-	punctuationRegulation := functions.HandlePunctuation(singleQuoteRegulation)
+	singleQuoteRegulation := functions.HandleSingleQuote(punctuationRegulation)
 
 	/* Finalization */
 	// clean up
-	contentRejoin := strings.Join(punctuationRegulation, " ")
-	contentProcessed := functions.RemoveFlagSuffixes(contentRejoin)
+	contentRejoin := strings.Join(singleQuoteRegulation, " ")
 
 	// split the processed text into words
 	contentFinal := []string{}
-	for _, element := range strings.Split(contentProcessed, " ") {
+	for _, element := range strings.Split(contentRejoin, " ") {
 		if element != "" {
 			contentFinal = append(contentFinal, element)
 		}
