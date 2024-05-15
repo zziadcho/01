@@ -2,35 +2,40 @@ package main
 
 import (
 	"fmt"
-	"01/go-reloaded/common/functions"
-	"01/go-reloaded/common/variables"
-	"strconv"
 	"strings"
 )
 
-func main() {
-	content := "hello guy im gonna show you (up, 9)"
-	contentSplit := strings.Split(content, " ")
-	fmt.Println(len(contentSplit))
-	for i, element := range contentSplit {
-		if variables.UpFlagMulti.MatchString(element) && i+1 < len(contentSplit) {
-			multipiler := contentSplit[i+1]
-			multipiler = strings.TrimRight(multipiler, ")")
-			multipilerInt, err := strconv.Atoi(multipiler)
-			if err != nil {
-				fmt.Println("there was a problem converting the Up multiplier to integer:", err)
-				continue
-			}
-			if multipilerInt <= 0 || i-multipilerInt < 0 {
-				fmt.Println("the Up multiplier is out of range, lower the number to fix the problem:", multipilerInt)
-				continue
-			}
-			for j := i - multipilerInt; j < i; j++ {
-				contentSplit[j] = functions.ToUpper(contentSplit[j])
-			}
-			convertedWord := functions.ToUpper(contentSplit[i-1])
-			contentSplit[i-1] = convertedWord
+func AdjustArticles(text []string) []string {
+	for i, word := range text {
+		if word == "an" {
+			text[i] = "a"
+		}
+		if word == "An" || word == "AN" {
+			text[i] = "A"
 		}
 	}
-	fmt.Println(contentSplit)
+
+	for i := 0; i < len(text)-1; i++ {
+		if text[i] == "a" && NeedsAnAdjustment(text[i+1]) {
+			text[i] = "an"
+		}
+		if text[i] == "A" && NeedsAnAdjustment(text[i+1]) {
+			text[i] = "An"
+		}
+	}
+	return text
+}
+
+func NeedsAnAdjustment(nextWord string) bool {
+	vowels := "aeiouAEIOU"
+	if len(nextWord) > 0 && strings.Contains(vowels, string(nextWord[0])) {
+		return true
+	}
+	return false
+}
+
+func main(){
+	text := "a apple an ship A APPLE AN SHIP"
+	textSplit := strings.Split(text, " ")
+	fmt.Println(AdjustArticles(textSplit))
 }
