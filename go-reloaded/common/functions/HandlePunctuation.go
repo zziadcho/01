@@ -6,11 +6,14 @@ import (
 )
 
 func HandlePunctuation(text []string) []string {
-	textJoin := strings.Join(text, " ")
+	textJoined := strings.Join(text, " ")
+	
 	target := regexp.MustCompile(`\s*([.,!?:;])`)
-	textJoin = target.ReplaceAllString(textJoin, "$1")
+	textJoined = target.ReplaceAllString(textJoined, "$1")
+
 	target = regexp.MustCompile(`\s*([.,!?:;]+)\s*`)
-	textJoin = target.ReplaceAllString(textJoin, "$1           ")
-	last := strings.Fields(textJoin)
-	return last
+	textJoined = target.ReplaceAllString(textJoined, "$1           ")
+
+	result := strings.Split(textJoined, " ")
+	return result
 }
