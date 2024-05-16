@@ -12,7 +12,7 @@ func HandlePunctuation(text []string) []string {
 	textJoined = target.ReplaceAllString(textJoined, "$1")
 
 	target = regexp.MustCompile(`\s*([.,!?:;]+)\s*`)
-	textJoined = target.ReplaceAllString(textJoined, "$1           ")
+	textJoined = target.ReplaceAllString(textJoined, "$1 ")
 
 	result := strings.Split(textJoined, " ")
 	return result
