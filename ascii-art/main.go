@@ -6,15 +6,15 @@ import (
 	"strings"
 )
 
-func ReadFontFile(fileName string) string {
+func ReadFontFile(fileName string) (string, error) {
 	// reading font file
-	file, err := os.ReadFile("standard.txt")
+	file, err := os.ReadFile(os.Args[2] + ".txt")
 	if err != nil {
-		fmt.Printf("error reading file: %v", err)
-		return ""
+		fmt.Printf("error reading the file: %v", err)
+		return "", err
 	}
 	content := string(file)
-	return content
+	return content, err
 }
 
 func ParseFontFile(data string) map[rune][]string {
@@ -27,7 +27,7 @@ func ParseFontFile(data string) map[rune][]string {
 	fontMap := make(map[rune][]string)
 
 	for i, block := range blocks {
-		// removing white spaces from each block
+		// splitting blocks by lines
 		lines := strings.Split(block, "\n")
 
 		// mapping the current character to its ascii art
@@ -43,31 +43,41 @@ func ParseFontFile(data string) map[rune][]string {
 
 func GenerateAsciiArt(text string, fontMap map[rune][]string) string {
 	var result []string
-	if len(text) <= 12 {
-		for i := 0; i <= 8; i++ {
-			result = append(result, "")
-		}
 
-		for _, char := range text {
-			if charArt, found := fontMap[char]; found {
-				for i, line := range charArt {
-					result[i] += line + " "
-				}
-			} else {
-				for i := 0; i <= 8; i++ {
-					result[i] += "        "
-				}
+	for i := 0; i < 8; i++ {
+		result = append(result, "")
+	}
+
+	for _, char := range text {
+		if charArt, found := fontMap[char]; found {
+			for i, line := range charArt {
+				result[i] += line + " "
+			}
+		} else {
+			for i := 0; i < 8; i++ {
+				result[i] += "        "
 			}
 		}
-	}else{
-    fmt.Printf("string length has to be below 12, your input is: %v", len(text))
-  }
-  return strings.Join(result, "\n")
+	}
+	return strings.Join(result, "\n")
 }
 
 func main() {
-	fontData := ReadFontFile("standard.txt")
+	if len(os.Args) != 3 {
+		fmt.Println("Usage: go run main.go [text to print] [font file]")
+		return
+	}
+
+	text := os.Args[1]
+	fontFile := os.Args[2]
+
+	fontData, err := ReadFontFile(fontFile)
+	if err != nil {
+		fmt.Printf("Error: %v\n", err)
+		return
+	}
+
 	fontMap := ParseFontFile(fontData)
-	generatedArt := GenerateAsciiArt("-*/---*-*//**", fontMap)
-	fmt.Println(generatedArt)
+	asciiArt := GenerateAsciiArt(text, fontMap)
+	fmt.Println(asciiArt)
 }
