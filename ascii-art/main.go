@@ -3,10 +3,10 @@ package main
 import (
 	"fmt"
 	"os"
-	"regexp"
 	"strings"
 )
 
+// read font file function
 func ReadFontFile() string {
 	file, err := os.ReadFile("standard.txt")
 	if err != nil {
@@ -16,6 +16,7 @@ func ReadFontFile() string {
 	return content
 }
 
+// function responsible for parsong the font file
 func ParseFont(data string) map[rune][]string {
 	startChar := ' '
 	blocks := strings.Split(data, "\n\n")
@@ -35,17 +36,14 @@ func ParseFont(data string) map[rune][]string {
 	return fontMap
 }
 
+// ascii art generator function
 func GenerateAsciiArt(text string, fontMap map[rune][]string) string {
 	var result []string
-	
-	for i := 0; i <= len(os.Args[1]); i++ {
-		
-	}
 
 	for i := 0; i <= 8; i++ {
 		result = append(result, "")
 	}
-	
+
 	for _, char := range text {
 		if charArt, found := fontMap[char]; found {
 			for i, line := range charArt {
@@ -57,23 +55,18 @@ func GenerateAsciiArt(text string, fontMap map[rune][]string) string {
 	return strings.Join(result[:len(result)-1], "\n")
 }
 
+// main block
 func main() {
-		fontFile := ReadFontFile()
-		fontParse := ParseFont(fontFile)
-		
-		target := regexp.MustCompile(`\\n`)
-		printablesInput := os.Args[1]
-		
-		lockedIn := target.FindStringIndex(printablesInput)
-		
-		printables := []string{
-			printablesInput[:lockedIn[0]],
-			printablesInput[lockedIn[0]:lockedIn[1]],
-			printablesInput[lockedIn[1]:],
-		}
-		
-		printablesReady := strings.Join(printables, " ")
+	fontFile := ReadFontFile()
+	fontParse := ParseFont(fontFile)
 
-		fmt.Println(GenerateAsciiArt(printablesReady, fontParse))
-	
+	if len(os.Args) > 1 {
+		printableArgs := os.Args[1]
+		printableArgs = strings.ReplaceAll(printableArgs, `\n`, "\n")
+		Generate := GenerateAsciiArt(printableArgs, fontParse)
+		fmt.Println(Generate)
+	} else {
+		fmt.Println("something went wrong, check your input")
+	}
+
 }
