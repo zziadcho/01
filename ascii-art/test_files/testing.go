@@ -3,15 +3,20 @@ package main
 import (
 	"fmt"
 	"os"
-	"strings"
+	"regexp"	
 )
 
-func main(){
-	standard, _ := os.ReadFile("standard.txt")
-	standardString := string(standard)
-	standardSplit := strings.Split(standardString, "\n\n")
-	letter :=  standardSplit[65]
-	letterSplit := strings.Split(letter,"\n")
-	fmt.Println(letterSplit)
+func main() {
+    if len(os.Args) < 2 {
+        fmt.Println("Usage: go run your_program.go <string>")
+        return
+    }
 
+	target := regexp.MustCompile(`\\n`)
+    printables := os.Args[1]
+	lockedIn := target.FindStringIndex(printables)
+	beforeNewLine := printables[:lockedIn[0]]
+	newLine := printables[lockedIn[0]:lockedIn[1]]
+	afterNewLine := printables[lockedIn[1]:]
+	fmt.Println(beforeNewLine,newLine, afterNewLine)
 }
