@@ -14,12 +14,20 @@ func main() {
 
 	if len(os.Args) > 1 {
 		printableArgs := os.Args[1]
+
 		printableSplit := strings.Split(printableArgs, `\n`)
-		for i := 0; i < len(printableSplit); i++ {
-			functions.GenerateAsciiArt(printableSplit[i], fontParse)
+
+		for i, line := range printableSplit {
+			if line != "" {
+				generatedArt := functions.GenerateAsciiArt(line, fontParse)
+				fmt.Println(generatedArt)
+			}
+
+			if i < len(printableSplit)-1 {
+				fmt.Println()
+			}
 		}
 	} else {
 		fmt.Println("something went wrong, check your input")
 	}
-
 }
