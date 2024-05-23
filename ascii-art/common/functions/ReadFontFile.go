@@ -6,8 +6,8 @@ import (
 )
 
 // read font file function
-func ReadFontFile() string {
-	file, err := os.ReadFile("standard.txt")
+func ReadFontFile(banner string) string {
+	file, err := os.ReadFile(banner)
 	if err != nil {
 		fmt.Printf("error opening the file: %v", err)
 	}
