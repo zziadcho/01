@@ -6,13 +6,23 @@ import (
 )
 
 // function responsible for parsong the font file
-func ParseFont(data string) map[rune][]string {
+func ParseFont(data string, flag bool) map[rune][]string {
 	startChar := ' '
-	blocks := strings.Split(data, "\n\n")
+	var blocks []string
+	if flag {
+		blocks = strings.Split(data,"\r\n\r\n")
+	} else {
+		blocks = strings.Split(data, "\n\n")
+	}
 	fontMap := make(map[rune][]string)
 
 	for i, block := range blocks {
-		lines := strings.Split(block, "\n")
+		var lines []string
+		if flag{
+			lines = strings.Split(block,"\r\n")
+		} else {
+			lines = strings.Split(block, "\n")
+		}
 		if len(lines) > 0 {
 			char := rune(startChar + rune(i))
 			fontMap[char] = lines

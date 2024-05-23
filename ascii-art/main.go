@@ -13,15 +13,19 @@ func main() {
 		var fontFile string
 		if len(os.Args) == 2 {
 			fontFile = functions.ReadFontFile("standard.txt")
-		} else if len(os.Args) == 3 {
+		} else {
 			if functions.ParseBannerFile(os.Args[2]) {
 				fontFile = functions.ReadFontFile(functions.AddTxtExtension(os.Args[2]))
 			} else {
 				fmt.Println("The Banner File you gave is not right")
+				os.Exit(1)
 			}
 		}
-		
-		fontParse := functions.ParseFont(fontFile)
+		flag := false
+		if os.Args[2] == "thinkertoy" {
+			flag = true
+		}
+		fontParse := functions.ParseFont(fontFile,flag)
 		printableArgs := os.Args[1]
 		printableSplit := strings.Split(printableArgs, `\n`)
 
