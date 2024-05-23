@@ -17,12 +17,13 @@ func main() {
 			if functions.ParseBannerFile(os.Args[2]) {
 				fontFile = functions.ReadFontFile(functions.AddTxtExtension(os.Args[2]))
 			} else {
-				fmt.Println("The Banner File you gave is not right")
+				fmt.Println("Usage: go run . [STRING] [BANNER]")
+				fmt.Println("EX: go run . something standard")
 				os.Exit(1)
 			}
 		}
 		flag := false
-		if os.Args[2] == "thinkertoy" {
+		if len(os.Args) == 3 && os.Args[2] == "thinkertoy" {
 			flag = true
 		}
 		fontParse := functions.ParseFont(fontFile,flag)
@@ -40,6 +41,8 @@ func main() {
 			}
 		}
 	} else {
-		fmt.Println("something went wrong, check your input")
+		fmt.Println("Usage: go run . [STRING] [BANNER]")
+		fmt.Println("EX: go run . something standard")
+		os.Exit(1)
 	}
 }
