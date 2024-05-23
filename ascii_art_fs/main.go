@@ -7,18 +7,6 @@ import (
 	"strings"
 )
 
-func AddTxt(arg string) string {
-	var c []rune
-	for _,r := range arg {
-		c = append(c,r)
-	}
-	txt := ".txt"
-	for _,r := range txt {
-		c = append(c,r)
-	}
-	return string(c)
-}
-
 func ParseBannerFile(arg string) bool {
 	if arg == "standard" || arg == "shadow" || arg == "thinkertoy" {
 		return true
@@ -35,7 +23,7 @@ func main() {
 			fontFile = functions.ReadFontFile("standard.txt")
 		} else if len(os.Args) == 3 {
 			if ParseBannerFile(os.Args[2]) {
-				fontFile = functions.ReadFontFile(AddTxt(os.Args[2]))
+				fontFile = functions.ReadFontFile(AddTxtExtension(os.Args[2]))
 			} else {
 				fmt.Println("The Banner File you gave is not right")
 			}
