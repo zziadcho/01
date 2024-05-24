@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"01/myPg/common/functions"
+	"01/morse-interpeter/common/functions"
 )
 
 func main() {
