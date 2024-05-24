@@ -1,7 +1,7 @@
 package functions
 
 import (
-	"01/myPg/common/variables"
+	"01/morse-interpeter/common/variables"
 	"strings"
 )
 
