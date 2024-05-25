@@ -10,6 +10,7 @@ func ParseFont(data string, flag bool) map[rune][]string {
 	startChar := ' '
 	var blocks []string
 	if flag {
+		data = data[1:]
 		blocks = strings.Split(data,"\r\n\r\n")
 	} else {
 		blocks = strings.Split(data, "\n\n")
