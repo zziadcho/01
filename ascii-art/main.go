@@ -7,6 +7,8 @@ import (
 	"strings"
 )
 
+
+
 // main block
 func main() {
 	if len(os.Args) == 3 || len(os.Args) == 2 {
@@ -29,14 +31,16 @@ func main() {
 		fontParse := functions.ParseFont(fontFile,flag)
 		printableArgs := os.Args[1]
 		printableSplit := strings.Split(printableArgs, `\n`)
+		if strings.Join(printableSplit," ") == "" {
+			fmt.Println("\n")
+			os.Exit(0)
+		}
+//		os.Exit(0)
 
-		for i, line := range printableSplit {
+		for _, line := range printableSplit {
 			if line != "" {
 				generatedArt := functions.GenerateAsciiArt(line, fontParse)
-				fmt.Println(generatedArt)
-			}
-
-			if i < len(printableSplit)-1 {
+			} else {
 				fmt.Println()
 			}
 		}
