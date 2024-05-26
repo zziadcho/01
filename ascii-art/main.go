@@ -9,6 +9,23 @@ import (
 
 
 
+func CheckEmpty(s []string) bool {
+	new_nums := 0
+	for _,str := range s {
+		if str == "" {
+			new_nums++
+		}
+	}
+	if new_nums == len(s) {
+		for new_nums > 1 {
+			fmt.Println()
+			new_nums--
+		}
+		return true
+	}
+	return false
+}
+
 // main block
 func main() {
 	if len(os.Args) == 3 || len(os.Args) == 2 {
@@ -28,21 +45,21 @@ func main() {
 		if len(os.Args) == 3 && os.Args[2] == "thinkertoy" {
 			flag = true
 		}
+	
 		fontParse := functions.ParseFont(fontFile,flag)
 		printableArgs := os.Args[1]
 		printableSplit := strings.Split(printableArgs, `\n`)
-		if strings.Join(printableSplit," ") == "" {
-			fmt.Println("\n")
+		if(CheckEmpty(printableSplit)) {
 			os.Exit(0)
-		}
-//		os.Exit(0)
-
-		for _, line := range printableSplit {
-			if line != "" {
-				generatedArt := functions.GenerateAsciiArt(line, fontParse)
-			} else {
-				fmt.Println()
-			}
+		} else {
+				for _, line := range printableSplit {
+					if line != "" {
+						generatedArt := functions.GenerateAsciiArt(line, fontParse)
+						fmt.Println(generatedArt)
+					} else {
+						fmt.Println()
+					}
+				}
 		}
 	} else {
 		fmt.Println("Usage: go run . [STRING] [BANNER]")
