@@ -41,9 +41,13 @@ func main() {
 	printableSplit := functions.ArgSplitter(printableArgs)
 	generatedArt := functions.GeneratorLoop(printableSplit, fontParse)
 	switch {
+	case outputFlag && functions.CheckEmpty(printableSplit):
+		os.WriteFile(outputFile, []byte(), 0600)
+		os.Exit(0)
+
 	case functions.CheckEmpty(printableSplit):
 		os.Exit(0)
-		
+
 	case outputFlag:
 		os.WriteFile(outputFile, []byte(generatedArt), 0600)
 
