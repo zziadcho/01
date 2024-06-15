@@ -1,87 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="./static/style.css" />
-    <link rel="icon" type="image/x-icon" href="./images/ghostico.ico" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&display=swap"
-      rel="stylesheet"
-    />
-    <title>GhostList</title>
-  </head>
-
-  <body>
-    <!-- HEADER -->
-
-    <!-- 1st NAVBAR -->
-
-    <nav class="nav1">
-      <div>
-        <a href="#"><img class="logo" src="./images/ghost.png" alt="boo" /></a>
-      </div>
-      <div>
-        <h3>GhostList</h3>
-      </div>
-      <ul class="nav-list">
-        <li class="list-item">
-          <a class="items" href="#">Login</a>
-        </li>
-        <li class="list-item">
-          <a class="items" href="#">Register</a>
-        </li>
-      </ul>
-    </nav>
-
-    <!-- 2nd NAVBAR -->
-
-    <nav class="nav2">
-      <div>
-        <a href="#">Explore</a>
-      </div>
-      <div>
-        <a href="#">Inspiration</a>
-      </div>
-      <div>
-        <a href="#">Trending</a>
-      </div>
-      <div>
-        <a href="#">Leaderboards</a>
-      </div>
-    </nav>
-
-    <!-- BODY -->
-    <div>
-      <p>
-        Stop dreaming and get to work, create your GhostList and start making
-        progress. <br />
-        <a href="#"><span>Begin The Journey</span></a>
-      </p>
-    </div>
-    <div class="quote1">
-      <h3>Greatness From Small Beginnings.</h3>
-      <h6>- Sir Francis Drake</h6>
-    </div>
-
-    <br />
-    <div class="quote2">
-      <h3>True Mastery Begins Where Individual Ego Ends.</h3>
-      <h6>- Ghost of Tsushima</h6>
-    </div>
-    <!-- FOOTER -->
-    <footer>
-      <div>
-        <img class="footer-logo" src="./images/ghost.png" alt="boo" />
-      </div>
-      <div class="links">
-        <h5>Youtube</h5>
-        |
-        <h5>Github</h5>
-      </div>
-    </footer>
-  </body>
+<html>
+<head>
+    <title>Input Form</title>
+</head>
+<body>
+  <style>
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        font-family: Arial, sans-serif;
+    }
+    .form-container {
+        text-align: center;
+    }
+</style>
+    <form action="/" method="post">
+        <label for="input">Enter something:</label>
+        <input type="text" id="input" name="input">
+        <button type="submit">Submit</button>
+    </form>
+</body>
 </html>
