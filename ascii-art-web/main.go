@@ -8,6 +8,7 @@ import (
 )
 
 func FormHandler(w http.ResponseWriter, r *http.Request) {
+	var generatedArt string
 	if r.Method == http.MethodGet {
 		log.Println("get")
 	} else if r.Method == http.MethodPost {
@@ -22,9 +23,12 @@ func FormHandler(w http.ResponseWriter, r *http.Request) {
 			log.Println("post request with input:", input)
 		}
 		printableSplit := functions.ArgSplitter(input)
-		generatedArt := functions.GeneratorLoop(printableSplit, functions.ParseFont(functions.ReadFontFile("standard.txt"), "standard"))
-		fmt.Println(generatedArt)
+		generatedArt = functions.GeneratorLoop(printableSplit, functions.ParseFont(functions.ReadFontFile("standard.txt"), "standard"))
+		// temp, err := template.New("index.html").Parse(generatedArt)
+
+		w.Header().Set("Content-Type", "text/html")
 	}
+	fmt.Fprint(w, "<div class='container'><pre>"+generatedArt+"</pre></div>")
 	http.ServeFile(w, r, "index.html")
 }
 func main() {
