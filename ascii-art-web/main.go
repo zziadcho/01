@@ -1,38 +1,33 @@
 package main
 
 import (
-	"01/ascii-art/common/functions"
-	"fmt"
 	"log"
 	"net/http"
+	"text/template"
 )
 
-func FormHandler(w http.ResponseWriter, r *http.Request) {
-	var generatedArt string
-	if r.Method == http.MethodGet {
-		log.Println("get")
-	} else if r.Method == http.MethodPost {
-		log.Println("post")
-		err := r.ParseForm()
-		if err != nil {
-			http.Error(w, "Error", http.StatusBadRequest)
-			return
-		}
-		input := r.Form.Get("input")
-		if input != "" {
-			log.Println("post request with input:", input)
-		}
-		printableSplit := functions.ArgSplitter(input)
-		generatedArt = functions.GeneratorLoop(printableSplit, functions.ParseFont(functions.ReadFontFile("standard.txt"), "standard"))
-		// temp, err := template.New("index.html").Parse(generatedArt)
+type Data struct{
+	Title string
+	Head string
+	Content string
+}
 
-		w.Header().Set("Content-Type", "text/html")
+func handler(w http.ResponseWriter, r *http.Request) {
+	data := Data{
+		Title: "Welcome",
+		Head: "This is the head",
+		Content: "This is my content",
 	}
-	fmt.Fprint(w, "<div class='container'><pre>"+generatedArt+"</pre></div>")
-	http.ServeFile(w, r, "index.html")
+	tmpl, _ := template.ParseFiles("index.html")
+	tmpl.Execute(w, data)
+}
+
+func cssHandler(w http.ResponseWriter, r *http.Request){
+	http.ServeFile(w, r, "style.css")
 }
 func main() {
-	http.HandleFunc("/", FormHandler)
+	http.HandleFunc("/", handler)
+    http.HandleFunc("/styles.css", cssHandler)
 	log.Println("server is on port :8080")
 	http.ListenAndServe(":8080", nil)
 }
