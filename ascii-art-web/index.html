@@ -1,16 +1,138 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>Form Example</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playwrite+NG+Modern:wght@100..400&display=swap"
+        rel="stylesheet">
+    <title>Ascii-Generator</title>
+    <style>
+        div {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card {
+            position: relative;
+            width: 190px;
+            height: 254px;
+            background-color: #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: end;
+            padding: 12px;
+            gap: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .card::before {
+            content: '';x;
+            background: linear-gradient(-45deg, #e81cff 0%, #40c9ff 100%);
+            z-index: -10;
+            pointer-events: none;
+            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .card::after {
+            content: "";
+            z-index: -1;
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(-45deg, #fc00ff 0%, #00dbde 100%);
+            transform: translate3d(0, 0, 0) scale(0.95);
+            filter: blur(20px);
+        }
+
+        .heading {
+            font-size: 20px;
+            text-transform: capitalize;
+            font-weight: 700;
+        }
+
+        .card p:not(.heading) {
+            font-size: 14px;
+        }
+
+        .card p:last-child {
+            color: #e81cff;
+            font-weight: 600;
+        }
+
+        .card:hover::after {
+            filter: blur(30px);
+        }
+
+        .card:hover::before {
+            transform: rotate(-90deg) scaleX(1.34) scaleY(0.77);
+        }
+
+        label {
+            color: white;
+            display: flex;
+            margin: 5px;
+            font-family: "Playwrite NG Modern", cursive;
+        }
+
+        h1 {
+            font-size: 35px;
+            font-family: "Playwrite NG Modern", cursive;
+            color: black;
+            display: flex;
+            justify-content: center;
+        }
+
+        select,
+        button,
+        option,
+        input {
+            border-radius: 50px;
+            height: 25px;
+            font-size: 15px;
+        }
+
+        div.result {
+            margin: 25px;
+            border-radius: 50px;
+            position: fixed;
+            top: 480px;
+            left: 0;
+            right: 0;
+            bottom: 50px;
+            overflow: auto;
+            background: #fff;
+            border: 3px #cccccc solid;
+        }
+    </style>
 </head>
+
 <body>
-    <div class="centered-div">
-        <form action="/" method="post">
+    <div>
+        <h1>Ascii-Art-Generator</h1>
+    </div>
+    <div>
+        <form action="/" method="post" class="card">
             <label for="input">Input</label>
             <input type="text" id="input" name="input">
-            <label for="message">Ascii Art</label>
-            <button type="submit">Generate</button>
+
+            <label for="dropdown">Banner</label>
+            <select id="dropdown" name="dropdown">
+                <option value="option1">Standard</option>
+                <option value="option2">Thinkertoy</option>
+                <option value="option2">Shadow</option>
+            </select>
+
+            <label for="button">Button</label>
+            <button type="submit" name="button" value="clicked">Click Me</button>
         </form>
     </div>
+    <h1>Result</h1>
+    <div class="result">
+    </div>
 </body>
+
 </html>
