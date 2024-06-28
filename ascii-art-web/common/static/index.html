@@ -5,13 +5,11 @@
     <meta charset="UTF-8">
     <title>Ascii-art-web</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: "VT323", monospace;
             color: white;
         }
 
@@ -21,7 +19,6 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
         }
 
         .header {
@@ -36,10 +33,7 @@
         .container {
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            font-size: 25px;
-            text-align: center;
+            font-size: 15px;
         }
 
         form {
@@ -51,8 +45,10 @@
 
         input[type="text"], select, input[type="submit"] {
             font-size: 20px;
+            text-align: center;
             padding: 10px;
-            border: 1px solid #fff;
+            border-radius: 25px;
+            border: 1px dashed #fff;
             background: #181818;
             color: #fff;
             outline: none;
@@ -62,8 +58,8 @@
             border-radius: 25px;
             border: 3px dashed white;
             max-width: 100%;
-            padding: 50px;
-            margin: 125px;
+            padding: 25px;
+            margin-top: 15px;
         }
     </style>
 </head>
@@ -82,9 +78,9 @@
             </select>
             <input type="submit" value="Generate">
         </form>
-        <div class="result-container">
+        <pre class="result-container">
             {{.Result}}
-        </div>
+        </pre>
     </div>
 </body>
 
