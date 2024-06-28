@@ -1,9 +1,10 @@
 package main
 
 import (
+	"01/ascii-art/common/functions"
+	"fmt"
 	"log"
 	"net/http"
-	"01/ascii-art/common/functions"
 )
 
 const PORT = ":8080"
@@ -15,4 +16,5 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	fmt.Println("http://localhost" + PORT)
 }
