@@ -3,22 +3,89 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Document</title>
+    <title>Ascii-art-web</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "VT323", monospace;
+            color: white;
+        }
+
+        body {
+            background-color: #262626;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .header {
+            padding: 25px;
+            background: #181818;
+            text-align: center;
+            width: 100%;
+            position: absolute;
+            top: 0;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 25px;
+            text-align: center;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="text"], select, input[type="submit"] {
+            font-size: 20px;
+            padding: 10px;
+            border: 1px solid #fff;
+            background: #181818;
+            color: #fff;
+            outline: none;
+        }
+
+        .result-container {
+            border-radius: 25px;
+            border: 3px dashed white;
+            max-width: 100%;
+            padding: 50px;
+            margin: 125px;
+        }
+    </style>
 </head>
 
 <body>
-        <h1>Hello world</h1>
+    <div class="header">
+        <h1>Ascii Art Generator</h1>
+    </div>
+    <div class="container">
         <form action="/ascii-art-web" method="post">
-            <input name="art" type="text">
+            <input name="input" type="text" placeholder="Enter text">
             <select name="banner">
                 <option value="standard">Standard</option>
                 <option value="shadow">Shadow</option>
                 <option value="thinkertoy">Thinkertoy</option>
             </select>
-            <input type="submit">
+            <input type="submit" value="Generate">
         </form>
-
-        <h1>{{.Art}}</h1>
+        <div class="result-container">
+            {{.Result}}
+        </div>
+    </div>
 </body>
 
 </html>
