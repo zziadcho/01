@@ -1,14 +1,14 @@
 package functions
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 )
 
 type Data struct {
-	Art    string
+	Input    string
 	Banner string
+	Result string
 }
 
 var UserData Data
@@ -29,12 +29,11 @@ func HandleAscii(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 		return
 	}
-
-	UserData.Art = r.Form.Get("art")
+	path := "./common/static/"
+	UserData.Input = r.Form.Get("input")
 	UserData.Banner = r.Form.Get("banner")
-	bannerFile := ReadFontFile(AddTxtExtension(UserData.Banner))
-	fmt.Println(bannerFile)
-	fmt.Println(UserData)
-
+	bannerFile := ReadFontFile(AddTxtExtension(path + UserData.Banner))
+	fontParse := ParseFont(bannerFile, UserData.Banner)
+	UserData.Result = GenerateAsciiArt(UserData.Input, fontParse)
 	http.Redirect(w, r, "/", http.StatusFound)
 }
