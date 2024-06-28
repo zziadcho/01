@@ -29,11 +29,12 @@ func HandleAscii(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 		return
 	}
+
 	path := "./common/static/"
 	UserData.Input = r.Form.Get("input")
 	UserData.Banner = r.Form.Get("banner")
 	bannerFile := ReadFontFile(AddTxtExtension(path + UserData.Banner))
 	fontParse := ParseFont(bannerFile, UserData.Banner)
-	UserData.Result = GenerateAsciiArt(UserData.Input, fontParse)
+	UserData.Result = "\n" + GenerateAsciiArt(UserData.Input, fontParse)
 	http.Redirect(w, r, "/", http.StatusFound)
 }
