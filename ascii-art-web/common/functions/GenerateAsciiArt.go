@@ -1,8 +1,6 @@
 package functions
 
 import (
-	"fmt"
-	"os"
 	"strings"
 )
 
@@ -15,15 +13,10 @@ func GenerateAsciiArt(text string, fontMap map[rune][]string) string {
 	}
 
 	for _, char := range text {
-		if char >= ' ' && char <= '~' {
-			if charArt, found := fontMap[char]; found {
-				for i, line := range charArt {
-					result[i] += line
-				}
+		if charArt, found := fontMap[char]; found {
+			for i, line := range charArt {
+				result[i] += line
 			}
-		} else {
-			fmt.Println("your input has a non printable character")
-			os.Exit(0)
 		}
 
 	}
