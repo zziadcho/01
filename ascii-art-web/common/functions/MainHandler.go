@@ -1,7 +1,6 @@
 package functions
 
 import (
-	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -23,6 +22,5 @@ func MainHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	fmt.Println(UserData)
 	t.Execute(w, UserData)
 }
