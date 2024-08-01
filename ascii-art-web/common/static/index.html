@@ -5,83 +5,94 @@
     <meta charset="UTF-8">
     <title>Ascii-art-web</title>
     <style>
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            color: white;
         }
 
         body {
-            background-color: #262626;
+            background-color: #5A72A0;
+        }
+
+        .main-container {
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-        }
-
-        .header {
-            padding: 25px;
-            background: #181818;
-            text-align: center;
-            width: 100%;
-            position: absolute;
-            top: 0;
-        }
-
-        .container {
-            display: flex;
             flex-direction: column;
-            font-size: 15px;
-        }
-
-        form {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-        }
-
-        input[type="text"], select, input[type="submit"] {
-            font-size: 20px;
-            text-align: center;
-            padding: 10px;
-            border-radius: 25px;
-            border: 1px dashed #fff;
-            background: #181818;
-            color: #fff;
-            outline: none;
-        }
-
-        .result-container {
-            border-radius: 25px;
-            border: 3px dashed white;
-            max-width: 100%;
-            padding: 25px;
+            height: 200px;
+            width: 35%;
+            border: 2px black dashed;
+            background: #262b38;
+            padding: 8px;
             margin-top: 15px;
+            border-left: 3px solid #021526;
+            border-right: 3px solid #6EACDA;
+            border-top: 3px solid #6EACDA;
+            border-bottom: 3px solid #021526;
+        }
+
+        h1 {
+            margin-top: 15px;
+        }
+
+        textarea {
+            resize: none;
+            height: 90px;
+            width: 360px;
+        }
+
+        input[name="banner"] {
+            margin: 10px;
+        }
+
+        input[type="text"],
+        input[type="submit"] {
+            margin: 10px;
+            padding: 5px;
+            font-size: 16px;
+        }
+
+        label {
+            margin: 0 10px;
+        }
+
+        pre {
+            position: fixed;
+            top: 300px;
+            left: 90px;
+            right: 90px;
+            bottom: 50px;
+            overflow: auto;
+            background: #fff;
+            border: 3px #cccccc solid;
         }
     </style>
 </head>
 
 <body>
-    <div class="header">
-        <h1>Ascii Art Generator</h1>
-    </div>
-    <div class="container">
-        <form action="/ascii-art-web" method="post">
-            <input name="input" type="text" placeholder="Enter text">
-            <select name="banner">
-                <option value="standard">Standard</option>
-                <option value="shadow">Shadow</option>
-                <option value="thinkertoy">Thinkertoy</option>
-            </select>
-            <input type="submit" value="Generate">
-        </form>
+    <center>
+        <h1>Ascii-art-Generator</h1>
+        <div class="main-container">
+            <form action="/ascii-art-web" method="post">
+                <div class="user-input">
+                    <textarea name="input" placeholder="Enter text"></textarea>
+                </div>
+                <div class="user-selection">
+                    <label><input type="radio" name="banner" value="standard" checked>standard</label>
+                    <label><input type="radio" name="banner" value="shadow">shadow</label>
+                    <label><input type="radio" name="banner" value="thinkertoy">thinkertoy</label>
+                </div>
+                <div class="user-submit">
+                    <input type="submit" value="Generate">
+                </div>
+            </form>
+        </div>
         <pre class="result-container">
             {{.Result}}
         </pre>
-    </div>
+    </center>
+
 </body>
 
 </html>
