@@ -33,7 +33,7 @@ func HandleAscii(w http.ResponseWriter, r *http.Request) {
 	path := "./common/static/"
 	UserData.Input = r.Form.Get("input")
 	UserData.Banner = r.Form.Get("banner")
-	bannerFile := ReadFontFile(AddTxtExtension(path + UserData.Banner))
+	bannerFile := ReadFontFile(path + UserData.Banner + ".txt")
 	fontParse := ParseFont(bannerFile, UserData.Banner)
 	UserData.Result = "\n" + GenerateAsciiArt(UserData.Input, fontParse)
 	http.Redirect(w, r, "/", http.StatusFound)
