@@ -6,31 +6,20 @@ import (
 
 // ascii art generator function
 func GenerateAsciiArt(text string, fontMap map[rune][]string) string {
-	var result []string
+    var result []string
+    lines := strings.Split(text, "\n")
 
-	for i := 0; i <= 8; i++ {
-		result = append(result, "")
-	}
+    for _, line := range lines {
+        var asciiLines [8]string
+        for _, char := range line {
+            if charArt, found := fontMap[char]; found {
+                for i, asciiLine := range charArt {
+                    asciiLines[i] += asciiLine
+                }
+            }
+        }
+        result = append(result, strings.Join(asciiLines[:], "\n"))
+    }
 
-	for _, char := range text {
-		if charArt, found := fontMap[char]; found {
-			for i, line := range charArt {
-				result[i] += line
-			}
-		}
-
-	}
-	return strings.Join(result[:len(result)-1], "\n")
-}
-
-func GeneratorLoop(splitArg []string, font map[rune][]string) string {
-	var generatedArt string
-	for _, line := range splitArg {
-		if line != "" {
-			generatedArt += GenerateAsciiArt(line, font) + "\n"
-		} else {
-			generatedArt += "\n"
-		}
-	}
-	return generatedArt
+    return strings.Join(result, "\n\n")
 }
