@@ -4,10 +4,8 @@ WORKDIR /app
 
 COPY . .
 
-RUN apk add --no-cache bash
-
-ENV PORT=8080
-
 EXPOSE 8080
 
-CMD [ "go", "run", "main.go" ]
+RUN go build main.go
+
+CMD [ "./main" ]
