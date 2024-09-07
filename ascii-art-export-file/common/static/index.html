@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta Content-Type: text/html; charset="UTF-8"> 
+    <meta charset="UTF-8">
+    <title>Ascii-art-web</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #5A72A0;
+        }
+
+        .main-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 200px;
+            width: 35%;
+            border: 2px black dashed;
+            background: #262b38;
+            padding: 8px;
+            margin-top: 15px;
+            border-left: 3px solid #021526;
+            border-right: 3px solid #6EACDA;
+            border-top: 3px solid #6EACDA;
+            border-bottom: 3px solid #021526;
+        }
+
+        h1 {
+            margin-top: 15px;
+        }
+
+        textarea {
+            resize: none;
+            height: 90px;
+            width: 360px;
+        }
+
+        input[name="banner"] {
+            margin: 10px;
+        }
+
+        input[type="text"],
+        input[type="submit"] {
+            margin: 10px;
+            padding: 5px;
+            font-size: 16px;
+        }
+
+        label {
+            margin: 0 10px;
+            color: white;
+        }
+
+        pre {
+            position: fixed;
+            top: 300px;
+            left: 90px;
+            right: 90px;
+            bottom: 50px;
+            overflow: auto;
+            background: #fff;
+            border: 3px #cccccc solid;
+        }
+    </style>
+</head>
+
+<body>
+    <center>
+        <h1>Ascii-art-Generator</h1>
+        <div class="main-container">
+            <form action="/ascii-art-web" method="post">
+                <div class="user-input">
+                    <textarea name="input" placeholder="Enter text"></textarea>
+                </div>
+                <div class="user-selection">
+                    <label><input type="radio" name="banner" value="standard" checked>standard</label>
+                    <label><input type="radio" name="banner" value="shadow">shadow</label>
+                    <label><input type="radio" name="banner" value="thinkertoy">thinkertoy</label>
+                </div>
+                <div class="user-submit">
+                    <input type="submit" value="Generate">
+                    <input type="submit" value="Download" download>
+                </div>
+            </form>
+        </div>
+        <pre class="result-container">
+            {{.Result}}
+        </pre>
+    </center>
+
+</body>
+
+</html>
