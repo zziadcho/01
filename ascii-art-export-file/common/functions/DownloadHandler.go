@@ -1,8 +1,9 @@
 package functions
 
 import (
-	"fmt"
+	"log"
 	"net/http"
+	"strconv"
 )
 
 func DownloadHandler(w http.ResponseWriter, r *http.Request) {
@@ -16,11 +17,25 @@ func DownloadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Disposition", "attachment; filename=download.txt")
+	formErr := r.ParseForm()
+	if formErr != nil {
+		log.Fatal(formErr)
+		return
+	}
 
+	var fileName string
+	if r.Form.Get("fileName") == "" {
+		fileName = "Download"
+	} else {
+		fileName = r.Form.Get("fileName")
+	}
+
+	w.Header().Set("Content-Disposition", "attachment; filename="+fileName+".txt")
+	w.Header().Set("Content-Type", "text/plain")
 	fileContent := UserData.Result
-	size := r.Header.Get("Content-Length")
-	fmt.Println(size)
+	length := len(fileContent)
+	w.Header().Set("Content-Length", strconv.Itoa(length))
+
 	_, err := w.Write([]byte(fileContent))
 	if err != nil {
 		http.Error(w, "Error generating file", http.StatusInternalServerError)
