@@ -3,6 +3,7 @@ package functions
 import (
 	"log"
 	"net/http"
+	"strconv"
 )
 
 type Data struct {
@@ -35,5 +36,7 @@ func HandleAscii(w http.ResponseWriter, r *http.Request) {
 	bannerFile := ReadFontFile(path + UserData.Banner + ".txt")
 	fontParse := ParseFont(bannerFile, UserData.Banner)
 	UserData.Result = "\n" + GenerateAsciiArt(UserData.Input, fontParse)
+	length := len(UserData.Result)
+	w.Header().Set("Content-Length",strconv.Itoa(length))
 	http.Redirect(w, r, "/", http.StatusFound)
 }
