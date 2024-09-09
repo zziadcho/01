@@ -17,9 +17,6 @@ func AutoLaunchBrowser(url string) {
 	case "windows":
 		cmd = "rundll32"
 		args = []string{"url.dll,FileProtocolHandler", url}
-	case "darwin":
-		cmd = "open"
-		args = []string{url}
 	default:
 		fmt.Println("Unsupported platform")
 		return
