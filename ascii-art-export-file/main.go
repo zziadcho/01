@@ -12,6 +12,7 @@ const PORT = ":8080"
 func main() {
 	http.HandleFunc("/", functions.MainHandler)
 	http.HandleFunc("/ascii-art-web", functions.HandleAscii)
+	http.HandleFunc("/download", functions.DownloadHandler)
 	fmt.Println("http://localhost" + PORT)
 	go functions.AutoLaunchBrowser("http://localhost:8080")
 	err := http.ListenAndServe(PORT, nil)
