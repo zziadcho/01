@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <meta Content-Type: text/html; charset="UTF-8"> 
+    <meta Content-Type: text/html; charset="UTF-8">
     <meta charset="UTF-8">
     <title>Ascii-art-web</title>
     <style>
@@ -14,6 +14,7 @@
 
         body {
             background-color: #5A72A0;
+            font-family: Arial, sans-serif;
         }
 
         .main-container {
@@ -21,26 +22,26 @@
             justify-content: center;
             align-items: center;
             flex-direction: column;
-            height: 200px;
-            width: 35%;
+            height: auto;
+            width: 90%; 
+            max-width: 600px; 
             border: 2px black dashed;
             background: #262b38;
-            padding: 8px;
+            padding: 16px; 
             margin-top: 15px;
             border-left: 3px solid #021526;
             border-right: 3px solid #6EACDA;
             border-top: 3px solid #6EACDA;
             border-bottom: 3px solid #021526;
-        }
-
-        h1 {
-            margin-top: 15px;
+            transition: width 0.3s ease; 
         }
 
         textarea {
             resize: none;
-            height: 90px;
-            width: 360px;
+            width: 100%; 
+            height: 120px; 
+            padding: 8px;
+            transition: height 0.3s ease;
         }
 
         input[name="banner"] {
@@ -50,8 +51,10 @@
         input[type="text"],
         input[type="submit"] {
             margin: 10px;
-            padding: 5px;
+            padding: 10px;
             font-size: 16px;
+            width: 100px;
+            transition: all 0.3s ease; 
         }
 
         label {
@@ -60,21 +63,64 @@
         }
 
         pre {
-            position: fixed;
-            top: 300px;
-            left: 90px;
-            right: 90px;
-            bottom: 50px;
+            margin-top: 20px;
+            padding: 15px;
             overflow: auto;
             background: #fff;
             border: 3px #cccccc solid;
+            width: 75%;
+            height: 250px;
+            transition: height 0.3s ease, width 0.3s ease; 
         }
+
+        .button-container {
+            display: flex;
+            justify-content: space-around; 
+            width: 100%;
+            margin-top: 15px;
+            transition: all 0.3s ease; 
+        }
+
+        @media (max-width: 600px) {
+            .main-container {
+                width: 95%; 
+                padding: 10px;
+            }
+
+            .button-container {
+                flex-direction: column; 
+                align-items: center;
+                transition: flex-direction 0.3s ease; 
+            }
+
+            .button-container input {
+                margin: 10px 0;
+                width: 80%;
+                transition: all 0.3s ease;
+            }
+
+            pre {
+                height: 200px;
+                transition: all 0.3s ease;
+            }
+
+            input[type="submit"] {
+                width: 80%;
+                font-size: 14px;
+                transition: all 0.3s ease;
+            }
+
+            textarea {
+                height: 100px;
+                transition: all 0.3s ease;
+            }
+        }
+
     </style>
 </head>
 
 <body>
     <center>
-        <h1>Ascii-art-Generator</h1>
         <div class="main-container">
             <form action="/ascii-art-web" method="post">
                 <div class="user-input">
@@ -85,17 +131,18 @@
                     <label><input type="radio" name="banner" value="shadow">shadow</label>
                     <label><input type="radio" name="banner" value="thinkertoy">thinkertoy</label>
                 </div>
-                <div class="user-submit">
-                    <input type="submit" value="Generate">
-                    <input type="submit" value="Download" download>
+
+                <div class="button-container">
+                    <input type="submit" value="Generate" formaction="/ascii-art-web">
+                    <input type="submit" value="Download" formaction="/download" formmethod="get">
                 </div>
             </form>
         </div>
+
         <pre class="result-container">
             {{.Result}}
         </pre>
     </center>
-
 </body>
 
 </html>
