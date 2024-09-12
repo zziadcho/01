@@ -1,44 +1,37 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
-	"io"
+	"01/groupie-tracker/common/functions"
+	"log"
 	"net/http"
 )
 
-// const PORT = ":8080"
+const PORT = ":8080"
 
-type Response struct {
-	Name    string    `json:"name"`
-	Pokemon []Pokemon `json:"pokemon_entries"`
-}
-
-type Pokemon struct {
-	EntryNo int            `json:"entry_number"`
-	Species PokemonSpecies `json:"pokemon_species"`
-}
-
-type PokemonSpecies struct {
-	Name string `json:"name"`
-}
-
-func main() {
-	response, _ := http.Get("http://pokeapi.co/api/v2/pokedex/kanto/")
-
-	responseData, _ := io.ReadAll(response.Body)
-
-	var responseObject Response
-	json.Unmarshal(responseData, &responseObject)
-
-	fmt.Println(responseObject.Name)
-	fmt.Println(responseObject.Pokemon)
-}
-
-// fmt.Println("http://localhost" + PORT)
-// http.HandleFunc("/", functions.MainHandler)
-// err := http.ListenAndServe(PORT, nil)
-// if err != nil {
-// 	log.Fatal(err)
-// 	return
+// type Response struct {
+// 	Name    string    `json:"name"`
+// 	Pokemon []Pokemon `json:"pokemon_entries"`
 // }
+
+// type Pokemon struct {
+// 	EntryNo int            `json:"entry_number"`
+// 	Species PokemonSpecies `json:"pokemon_species"`
+// }
+
+// type PokemonSpecies struct {
+// 	Name string `json:"name"`
+// }
+func main() {
+	// Serve static files (CSS, JS, images, etc.)
+	fs := http.FileServer(http.Dir("static"))
+	http.Handle("/static/", http.StripPrefix("/static/", fs))
+
+	// Register the main handler
+	http.HandleFunc("/", functions.MainHandler)
+
+	// Start the server
+	log.Println("Server is running at http://localhost:8080")
+	log.Fatal(http.ListenAndServe(":8080", nil))
+}
+
+	
