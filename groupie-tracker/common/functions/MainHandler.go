@@ -30,19 +30,16 @@ type Artists struct {
 }
 
 func MainHandler(w http.ResponseWriter, r *http.Request) {
-	// Ensure correct URL path
 	if r.URL.Path != "/" {
 		http.Error(w, "404 not found", http.StatusNotFound)
 		return
 	}
 
-	// Only allow GET method
 	if r.Method != "GET" {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	// Fetch artists data
 	response, err := http.Get("https://groupietrackers.herokuapp.com/api/artists")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -62,10 +59,8 @@ func MainHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Serve the HTML template
 	tmpl := template.Must(template.ParseFiles(filepath.Join("./common/static/index.html")))
-	if err := tmpl.Execute(w, nil); err != nil {
+	if err := tmpl.Execute(w, responseObject); err != nil {
 		http.Error(w, "error executing template", http.StatusInternalServerError)
 	}
 }
-
