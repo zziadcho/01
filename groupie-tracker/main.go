@@ -11,6 +11,7 @@ const PORT = ":8080"
 
 func main() {
 	http.HandleFunc("/", functions.MainHandler)
+	http.HandleFunc("/extra", functions.ExtraHandler)
 	staticDir := filepath.Join("common", "static") 
     fs := http.FileServer(http.Dir(staticDir))
     http.Handle("/static/", http.StripPrefix("/static/", fs))
