@@ -5,10 +5,10 @@ type Artists struct {
 	Image        string   `json:"image"`
 	Name         string   `json:"name"`
 	Members      []string `json:"members"`
-	CreationDate int      `json:"creation_date"`
-	FirstAlbum   string   `json:"first_album"`
+	CreationDate int      `json:"creationDate"`
+	FirstAlbum   string   `json:"firstAlbum"`
 	Locations    string   `json:"locations"`
-	ConcertDates string   `json:"concert_dates"`
+	ConcertDates string   `json:"concertDates"`
 	Relations    string   `json:"relations"`
 }
 
