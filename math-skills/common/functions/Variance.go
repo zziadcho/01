@@ -1,7 +1,6 @@
 package functions
 
 import (
-	"math"
 	"strconv"
 )
 
@@ -20,5 +19,5 @@ func Variance(data []string) float64 {
 		squaredSum += diff * diff
 	}
 
-	return math.Round(squaredSum / float64(len(intList))) 
+	return squaredSum / float64(len(intList))
 }

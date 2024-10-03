@@ -2,7 +2,7 @@ package functions
 
 import "math"
 
-func StdDeviation(data []string) interface{} {
+func StdDeviation(data []string) float64 {
 	variance := Variance(data)
-	return math.Round(math.Sqrt(variance)) 
+	return math.Sqrt(variance)
 }

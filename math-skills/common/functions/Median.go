@@ -1,12 +1,11 @@
 package functions
 
 import (
-	"math"
 	"sort"
 	"strconv"
 )
 
-func Median(data []string) interface{} {
+func Median(data []string) float64 {
 	if len(data) == 0 {
 		return 0
 	}
@@ -22,5 +21,5 @@ func Median(data []string) interface{} {
 	if i%2 == 1 {
 		return intList[i]
 	}
-	return math.Round((intList[i] + intList[i-1]) / 2)
+	return (intList[i] + intList[i-1]) / 2
 }

@@ -1,7 +1,6 @@
 package functions
 
 import (
-	"math"
 	"strconv"
 )
 
@@ -23,5 +22,5 @@ func Average(data []string) float64 {
 		return 1
 	}
 
-	return math.Round(float64(sum) / float64(count))
+	return float64(sum) / float64(count)
 }
