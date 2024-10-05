@@ -18,10 +18,12 @@ func main() {
 
 	// Set path for static material
 	fs := http.FileServer(http.Dir("static"))
-    http.Handle("/static/", http.StripPrefix("/static/", fs))
+	http.Handle("/static/", http.StripPrefix("/static/", fs))
+
+	// Launching browser
+	go source.AutoLaunchBrowser("http://localhost:8080")
 
 	// Start the server
 	fmt.Println("Server starting on port " + Port + "...")
-	fmt.Println("ctrl + click to open: http://" + Host + Port + "/")
 	http.ListenAndServe(Host+Port, nil)
 }

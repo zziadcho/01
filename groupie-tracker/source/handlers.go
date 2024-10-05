@@ -55,11 +55,13 @@ func HomePageHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl, err := template.ParseFiles(filepath.Join("./static/index.html"))
 	if err != nil {
 		http.Error(w, "Error parsing template", http.StatusInternalServerError)
+		return
 	}
 	FetchData(w) // Load the data from the API
 
 	if err := tmpl.Execute(w, ArtistProfiles); err != nil {
 		http.Error(w, "error executing template", http.StatusInternalServerError)
+		return
 	}
 }
 
@@ -79,10 +81,12 @@ func ArtistDetailsHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl, err := template.ParseFiles(filepath.Join("./static/artist-details.html"))
 	if err != nil {
 		http.Error(w, "Error parsing template", http.StatusInternalServerError)
+		return
 	}
 
 	// Pass the artist data to the template
 	if err := tmpl.Execute(w, artistData); err != nil {
 		http.Error(w, "Error executing template", http.StatusInternalServerError)
+		return
 	}
 }

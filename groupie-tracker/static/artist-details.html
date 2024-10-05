@@ -4,155 +4,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./static/artist-details.css">
+    <link href="https://fonts.googleapis.com/css2?family=Afacad+Flux:wght@100..1000&display=swap" rel="stylesheet">
     <title>{{ .Artist.Name }} - Artist Details</title>
-    <style>
-        *{
-            font-family: 'Roboto', sans-serif;
-        }
-        body {
-            background-color: #f0f2f5;
-            color: #333;
-            margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 50px auto;
-            padding: 20px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .container h1 {
-            font-size: 2.5em;
-            margin-bottom: 30px;
-            color: #333;
-            text-align: center;
-        }
-
-        .artist-image {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .artist-image img {
-            max-width: 300px;
-            height: auto;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Flexbox for horizontal layout */
-        .info-grid {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-        }
-
-        .info-section {
-            flex: 1 1 calc(5% - 0px); /* 25% width per section, adjusting with margins */
-            background-color: #f9f9f9;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 10px;
-            text-align: center;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .info-section h2 {
-            font-size: 1.5em;
-            margin-bottom: 10px;
-            color: #555;
-        }
-
-        .info-section p {
-            font-size: 1.1em;
-            color: #666;
-            margin: 0;
-        }
-
-        .info-section p strong {
-            color: #333;
-        }
-
-        .back {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #333;
-            color: #fff;
-            border-radius: 5px;
-            text-align: center;
-            display: inline-block;
-        }
-        
-        .back-link{
-            text-decoration: none;
-            color: white;
-        }
-
-        .back:hover {
-            background-color: #555;
-        }
-
-        /* Relations Table Styling */
-        .relations-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        .relations-table th, .relations-table td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: center;
-        }
-
-        .relations-table th {
-            background-color: #f2f2f2;
-            font-size: 1.2em;
-        }
-
-        .relations-table td {
-            font-size: 1em;
-            color: #333;
-        }
-
-        .relations-table tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 1024px) {
-            .info-section {
-                flex: 1 1 calc(50% - 20px); /* Two columns on medium screens */
-            }
-        }
-
-        @media (max-width: 768px) {
-            .info-section {
-                flex: 1 1 100%; /* One column per row on small screens */
-            }
-
-            .container h1 {
-                font-size: 2em;
-            }
-        }
-    </style>
 </head>
 
 <body>
     <div class="container">
-        <h1>{{ .Artist.Name }}</h1>
-
+        <!-- Back Button -->
+        <a class="back-link" href="/">
+            <div class="back">
+                &#8592;
+            </div>
+        </a>
         <!-- Artist Image Section -->
-        <div class="artist-image">
-            <img src="{{ .Artist.ImageUrl }}" alt="{{ .Artist.Name }} Image">
-        </div>
-
         <!-- Info Grid for Horizontal Layout -->
+         <h1 class="artist-title">
+            {{ .Artist.Name}}
+         </h1>
         <div class="info-grid">
+            <div class="artist-image">
+                <img src="{{ .Artist.ImageUrl }}" alt="{{ .Artist.Name }} Image">
+            </div>
             <!-- Members Section -->
             <div class="info-section">
                 <h2>Members</h2>
@@ -198,7 +71,7 @@
 
         <!-- Relations Section (Locations and Corresponding Dates) -->
         <div class="info-section">
-            <h2>Relations (Locations and Dates)</h2>
+            <h2>Relations</h2>
             <table class="relations-table">
                 <thead>
                     <tr>
@@ -224,18 +97,6 @@
                 </tbody>
             </table>
         </div>
-
-        <!-- Back Button -->
-        <a class="back-link" href="/">
-        <div class="back">
-            Back
-        </div>
-    </a>
-    <a href="https://www.google.com/search?q={{ .Artist.Name }}+music">
-        <div class="back">
-            More
-        </div>
-    </a>
     </div>
 </body>
 
