@@ -155,6 +155,6 @@ func main() {
 		fmt.Println("pb")
 	}
 	
-	fmt.Println("After sorting: ", stackA)
+	fmt.Println("After sorting: ", stackB)
 	fmt.Printf("Total Operations: %v\n", TotalOps)
 }
