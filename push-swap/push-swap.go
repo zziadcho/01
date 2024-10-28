@@ -118,15 +118,6 @@ func (s *Stack) PerformCheapestOperation() {
 	}
 }
 
-/************************* PushBackToStackA Method ***************************/
-func PushBackToStackA(stackA, stackB *Stack) {
-	for len(*stackB) > 0 {
-		stackB.PerformCheapestOperation()
-		stackB.Push(stackA)
-		fmt.Println("pa") 
-	}
-}
-
 /************************* Main ***************************/
 func main() {
 	if len(os.Args) < 2 {
