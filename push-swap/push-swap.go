@@ -9,8 +9,6 @@ import (
 
 type Stack []int
 
-var TotalOps int
-
 /************************* Push Method ***************************/
 func (s *Stack) Push(target *Stack) {
 	if len(*s) == 0 {
@@ -20,7 +18,6 @@ func (s *Stack) Push(target *Stack) {
 	val := (*s)[0]
 	*s = (*s)[1:]
 	*target = append(*target, val)
-	TotalOps++
 }
 
 /************************* Swap Method ***************************/
@@ -29,11 +26,9 @@ func (s *Stack) Swap() {
 		return
 	}
 	(*s)[0], (*s)[1] = (*s)[1], (*s)[0]
-	TotalOps++
-	fmt.Println("sa") 
 }
 
-/************************* SwapBoth Method ***************************/
+/************************* SwapBoth Function ***************************/
 func SwapAll(a, b *Stack) {
 	a.Swap()
 	b.Swap()
@@ -50,11 +45,9 @@ func (s *Stack) Rotate() {
 		(*s)[i-1] = (*s)[i]
 	}
 	(*s)[len(*s)-1] = top
-	TotalOps++
-	fmt.Println("ra") 
 }
 
-/************************* RotateAll Method ***************************/
+/************************* RotateAll Function ***************************/
 func RotateAll(a, b *Stack) {
 	a.Rotate()
 	b.Rotate()
@@ -71,15 +64,12 @@ func (s *Stack) ReverseRotate() {
 		(*s)[i] = (*s)[i-1]
 	}
 	(*s)[0] = bottom
-	TotalOps++
-	fmt.Println("rra")
 }
 
-/************************* ReverseRotateAll Method ***************************/
+/************************* ReverseRotateAll Function ***************************/
 func ReverseRotateAll(a, b *Stack) {
 	a.ReverseRotate()
 	b.ReverseRotate()
-	fmt.Println("rrr")
 }
 
 /************************* FindMinIndex Method ***************************/
@@ -94,27 +84,71 @@ func (s *Stack) FindMinIndex() int {
 }
 
 /************************* CalculateCost Method ***************************/
-func (s *Stack) CalculateCost(index int) int {
-	length := len(*s)
+func CalculateCost(stack Stack, index int) int {
+	length := len(stack)
 	if index <= length/2 {
 		return index
 	}
 	return length - index
+
 }
 
-/************************* PerformCheapestOperation Method ***************************/
-func (s *Stack) PerformCheapestOperation() {
-	minIndex := s.FindMinIndex()
-	cost := s.CalculateCost(minIndex)
+/************************* SortByChunk Function ***************************/
+func IbogaSort100Numbers(stackA, stackB *Stack) {
+	if len((*stackA)) == 0 {
+		os.Exit(1)
+	}
+	var firstHoldCost, secondHoldCost int // len(stackA) / 5 mn moraha ndir (len(stackA)/5 * 2) dik zoj ghadi tb9a tzid
+	for len((*stackA)) > 0 {
+		for i := 0; i < len((*stackA)); i++ {
+			if (*stackA)[i] >= 0 && (*stackA)[i] <= 19 {
+				firstHoldCost = i
+				break
+			}
+		}
+	
+		for i := len((*stackA))-1; i > 0; i-- {
+			if (*stackA)[i] >= 0 && (*stackA)[i] <= 19 {
+				secondHoldCost = len((*stackA))-i
+				break
+			}
+		}
+	
+		if firstHoldCost < secondHoldCost {
+			for i := 0; i < firstHoldCost; i++ {
+				(*stackA).Rotate()
+				fmt.Println("ra")
+			}
+		} else {
+			for i := 0; i < secondHoldCost; i++ {
+				(*stackA).ReverseRotate()
+				fmt.Println("rra")
+			}
+		}
+	
+		if len(*stackB) == 0 {
+			(*stackA).Push(stackB)
+			fmt.Print("pb")
+			continue
+		}
+	
+		minIndex := stackB.FindMinIndex()
+		costNewNum := CalculateCost(*stackB, minIndex)
+	
+		if costNewNum < len(*stackB) {
+			for i := 0; i < costNewNum; i++ {
+				stackB.Rotate()
+				fmt.Println("rb")
+			}
+		} else {
+			for i := 0; i < costNewNum; i++ {
+				stackB.ReverseRotate()
+				fmt.Println("rb")
+			}
+		}
 
-	if minIndex <= len(*s)/2 {
-		for i := 0; i < cost; i++ {
-			s.Rotate()
-		}
-	} else {
-		for i := 0; i < cost; i++ {
-			s.ReverseRotate()
-		}
+			(*stackA).Push(stackB)
+			fmt.Println("pb")
 	}
 }
 
@@ -138,14 +172,14 @@ func main() {
 	}
 
 	stackB := Stack{}
-	fmt.Println("Before sorting: ", stackA)
 
-	for len(stackA) > 0 {
-		stackA.PerformCheapestOperation()
-		stackA.Push(&stackB)
-		fmt.Println("pb")
-	}
-	
-	fmt.Println("After sorting: ", stackB)
-	fmt.Printf("Total Operations: %v\n", TotalOps)
+	println("----------")
+	fmt.Println("before sorting:" , stackA, stackB)
+	println("----------")
+
+	IbogaSort100Numbers(&stackA, &stackB)
+
+	println("----------")
+	fmt.Println("after sorting:" , stackA, stackB)
+	println("----------")
 }
