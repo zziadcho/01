@@ -41,3 +41,15 @@ func IsSorted(stack []int) bool {
     }
     return true
 }
+
+/************************* HasDuplicates ***************************/
+func HasDuplicates(stack Stack) bool {
+	seen := make(map[int]bool)
+	for _, value := range stack {
+		if seen[value] {
+			return true
+		}
+		seen[value] = true
+	}
+	return false
+}

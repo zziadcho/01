@@ -7,13 +7,13 @@ type Stack []int
 var TotalOperations int
 
 /************************* IbogaSort3Numbers ***************************/
-func IbogaSort2Numbers(stack *Stack){
-	if (*stack)[0] > (*stack)[1]{
-		
+func IbogaSort2Numbers(stack *Stack) {
+	if (*stack)[0] > (*stack)[1] {
 		stack.Swap()
-	} else {
+		fmt.Println("sa")
 	}
 }
+
 /************************* IbogaSort3Numbers ***************************/
 
 func IbogaSort3Numbers(stackA *Stack) {
@@ -49,30 +49,21 @@ func IbogaSort3Numbers(stackA *Stack) {
 	}
 }
 
-/************************* IbogaSort5Numbers ***************************/
-func IbogaSort5Numbers(stackA, stackB *Stack) {
-	if len((*stackA)) == 0 {
-		fmt.Println("Error")
-	}
-	
-	(*stackA).Push(stackB)
-	(*stackA).Push(stackB)
-
-	IbogaSort3Numbers(stackA)
-	IbogaSort2Numbers(stackB)
-	for len(*stackB) > 0 {
-		(*stackB).Push(stackA)
-	}
-}
 
 /************************* IbogaSort100Numbers ***************************/
-func IbogaSort100Numbers(stackA, stackB *Stack) {
+func IbogaSortChunks(stackA, stackB *Stack) {
 	if len((*stackA)) == 0 {
 		fmt.Println("Error")
+		return
 	}
 
-	chunkLength := len(*stackA) / 5
-	var firstHoldCost, secondHoldCost, chunkNumber int
+	var firstHoldCost, secondHoldCost, chunkNumber, chunkLength int
+
+	if len((*stackA)) <= 100 {
+		chunkLength = len(*stackA) / 5
+	} else if len((*stackA)) <= 500 {
+		chunkLength = len(*stackA) / 11
+	}
 
 	for len((*stackA)) > 0 {
 		if len(*stackB) != 0 {
@@ -108,7 +99,7 @@ func IbogaSort100Numbers(stackA, stackB *Stack) {
 
 		if len(*stackB) == 0 {
 			(*stackA).Push(stackB)
-			fmt.Print("pb")
+			fmt.Println("pb")
 			TotalOperations++
 			continue
 		}

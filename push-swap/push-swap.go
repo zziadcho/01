@@ -8,14 +8,12 @@ import (
 	"strings"
 )
 
-/************************* Main ***************************/
 func main() {
-	if len(os.Args) < 2 {
+	if len(os.Args) != 2 {
 		return
 	}
 
 	input := strings.Split(os.Args[1], " ")
-
 	stackA := functions.Stack{}
 	for _, v := range input {
 		num, err := strconv.Atoi(v)
@@ -25,21 +23,32 @@ func main() {
 		}
 		stackA = append(stackA, num)
 	}
-	stackB := functions.Stack{}
+
+	if functions.HasDuplicates(stackA) {
+		fmt.Println("Error")
+		return
+	}
 
 	if functions.IsSorted(stackA) {
 		fmt.Println("Already Sorted")
 		return
 	}
-	fmt.Println(stackA, stackB)
-	if len(stackA) == 2 {
+
+	stackB := functions.Stack{}
+
+	fmt.Println("Initial stacks:", stackA, stackB)
+
+	switch {
+	case len(stackA) == 2:
 		functions.IbogaSort2Numbers(&stackA)
-	} else if len(stackA) == 3 {
+	case len(stackA) == 3:
 		functions.IbogaSort3Numbers(&stackA)
-	} else if len(stackA) <= 5 {
-		functions.IbogaSort5Numbers(&stackA, &stackB)
+	case len(stackA) >= 5:
+		functions.IbogaSortChunks(&stackA, &stackB)
 	}
-	
-	fmt.Println(stackA, stackB)
-	fmt.Println(functions.TotalOperations)
+
+	functions.IbogaSortChunks(&stackA, &stackB)
+
+	fmt.Println("Final stacks:", stackA, stackB)
+	fmt.Println("Total Operations:", functions.TotalOperations)
 }
