@@ -11,14 +11,14 @@ import (
 	"time"
 )
 
-var currentDir = "."
+// var currentDir = "."
 
 type LongFormatInfo struct {
 	Permissions fs.FileMode
 	Nlink       string
 	User        string
 	Group       string
-	Size        string
+	Size        int64
 	Time        time.Time
 	FileName    string
 }
@@ -104,18 +104,18 @@ func ParseArgs(args []string) (map[string]bool, error) {
 	return Flags, nil
 }
 
-func humanReadableSize(size int64) string {
-	const unit = 1024
-	if size < unit {
-		return fmt.Sprintf("%dB", size)
-	}
-	div, exp := int64(unit), 0
-	for n := size / unit; n >= unit; n /= unit {
-		div *= unit
-		exp++
-	}
-	return fmt.Sprintf("%.1f%c", float64(size)/float64(div), "KMGTPE"[exp])
-}
+// func humanReadableSize(size int64) string {
+// 	const unit = 1024
+// 	if size < unit {
+// 		return fmt.Sprintf("%dB", size)
+// 	}
+// 	div, exp := int64(unit), 0
+// 	for n := size / unit; n >= unit; n /= unit {
+// 		div *= unit
+// 		exp++
+// 	}
+// 	return fmt.Sprintf("%.1f%c", float64(size)/float64(div), "KMGTPE"[exp])
+// }
 
 func SortMasterSlice(slice []LongFormatInfo) {
 	for i := 0; i < len(slice); i++ {
@@ -144,21 +144,20 @@ func MyLS(path string, flags map[string]bool) error {
 	}
 	var uId, gId, nLink string
 	for _, item := range list {
-		if !flags["All"] && !strings.HasPrefix(item.Name(), ".") {
-			if stat, ok := item.Sys().(*syscall.Stat_t); ok {
-				uId = fmt.Sprintf("%d", stat.Uid)
-				gId = fmt.Sprintf("%d", stat.Gid)
-				nLink = fmt.Sprintf("%d", stat.Nlink)
-			}
-			if user, err := user.LookupId(uId); err == nil {
-				uId = user.Username
-			}
-			if group, err := user.LookupGroupId(gId); err == nil {
-				gId = group.Name
-			}
-			element := LongFormatInfo{item.Mode(), nLink, uId, gId, humanReadableSize(item.Size()), item.ModTime(), item.Name()}
-			masterSlice = append(masterSlice, element)
+		if stat, ok := item.Sys().(*syscall.Stat_t); ok {
+			uId = fmt.Sprintf("%d", stat.Uid)
+			gId = fmt.Sprintf("%d", stat.Gid)
+			nLink = fmt.Sprintf("%d", stat.Nlink) // need to finish block calculations 
 		}
+		if user, err := user.LookupId(uId); err == nil {
+			uId = user.Username
+		}
+		if group, err := user.LookupGroupId(gId); err == nil {
+			gId = group.Name
+		}
+		element := LongFormatInfo{item.Mode(), nLink, uId, gId, item.Size(), item.ModTime(), item.Name()}
+		masterSlice = append(masterSlice, element)
+
 	}
 	if flags["Time"] {
 		SortMasterSlice(masterSlice)
@@ -167,9 +166,10 @@ func MyLS(path string, flags map[string]bool) error {
 	if flags["Reverse"] {
 		ReverseMasterSlice(masterSlice)
 	}
-	if flags["LongFormat"] {
+
+	if flags["LongFormat"] && flags["All"] {
 		for _, item := range masterSlice {
-			fmt.Printf("%v %2s %-5s %-5s %5s %-10s %-10s\n",
+			fmt.Printf("%v %1s %-5s %-5s %7d %-10s %-10s\n",
 				item.Permissions,
 				item.Nlink,
 				item.User,
@@ -179,9 +179,30 @@ func MyLS(path string, flags map[string]bool) error {
 				item.FileName,
 			)
 		}
+	} else if !flags["LongFormat"] && flags["All"] {
+		for _, item := range masterSlice {
+			fmt.Printf("%v  ", item.FileName)
+		}
+		println()
+	} else if flags["LongFormat"] && !flags["All"] {
+		for _, item := range masterSlice {
+			if !strings.HasPrefix(item.FileName, ".") {
+				fmt.Printf("%v %1s %-5s %-5s %7d %-10s %-10s\n",
+					item.Permissions,
+					item.Nlink,
+					item.User,
+					item.Group,
+					item.Size,
+					item.Time.Format("Jan 02 15:04"),
+					item.FileName,
+				)
+			}
+		}
 	} else {
 		for _, item := range masterSlice {
-			fmt.Printf("%v  ", item.FileName) // complete behavior for --all flag activated
+			if !strings.HasPrefix(item.FileName, ".") {
+				fmt.Printf("%v  ", item.FileName)
+			}
 		}
 		println()
 	}
