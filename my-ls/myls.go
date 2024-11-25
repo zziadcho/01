@@ -11,8 +11,6 @@ import (
 	"time"
 )
 
-// var currentDir = "."
-
 type LongFormatInfo struct {
 	Permissions fs.FileMode
 	Nlink       string
@@ -104,19 +102,6 @@ func ParseArgs(args []string) (map[string]bool, error) {
 	return Flags, nil
 }
 
-// func humanReadableSize(size int64) string {
-// 	const unit = 1024
-// 	if size < unit {
-// 		return fmt.Sprintf("%dB", size)
-// 	}
-// 	div, exp := int64(unit), 0
-// 	for n := size / unit; n >= unit; n /= unit {
-// 		div *= unit
-// 		exp++
-// 	}
-// 	return fmt.Sprintf("%.1f%c", float64(size)/float64(div), "KMGTPE"[exp])
-// }
-
 func SortMasterSlice(slice []LongFormatInfo) {
 	for i := 0; i < len(slice); i++ {
 		for j := 0; j < len(slice)-i-1; j++ {
@@ -136,8 +121,12 @@ func ReverseMasterSlice(slice []LongFormatInfo) []LongFormatInfo {
 	return slice
 }
 
-func MyLS(path string, flags map[string]bool) error {
+func MyLS(path string, flags map[string]bool, showPath bool) error {
+	if showPath {
+		fmt.Printf("%v:\n", path)
+	}
 	masterSlice := []LongFormatInfo{}
+	var totalBlocks int64
 	list, err := ReadAll(path)
 	if err != nil {
 		return err
@@ -145,9 +134,16 @@ func MyLS(path string, flags map[string]bool) error {
 	var uId, gId, nLink string
 	for _, item := range list {
 		if stat, ok := item.Sys().(*syscall.Stat_t); ok {
+			if flags["All"] {
+				totalBlocks += stat.Blocks
+			} else if strings.HasPrefix(item.Name(), ".") {
+
+			} else {
+				totalBlocks += stat.Blocks
+			}
 			uId = fmt.Sprintf("%d", stat.Uid)
 			gId = fmt.Sprintf("%d", stat.Gid)
-			nLink = fmt.Sprintf("%d", stat.Nlink) // need to finish block calculations 
+			nLink = fmt.Sprintf("%d", stat.Nlink)
 		}
 		if user, err := user.LookupId(uId); err == nil {
 			uId = user.Username
@@ -168,6 +164,7 @@ func MyLS(path string, flags map[string]bool) error {
 	}
 
 	if flags["LongFormat"] && flags["All"] {
+		fmt.Printf("total %v\n", totalBlocks/2)
 		for _, item := range masterSlice {
 			fmt.Printf("%v %1s %-5s %-5s %7d %-10s %-10s\n",
 				item.Permissions,
@@ -181,13 +178,13 @@ func MyLS(path string, flags map[string]bool) error {
 		}
 	} else if !flags["LongFormat"] && flags["All"] {
 		for _, item := range masterSlice {
-			fmt.Printf("%v  ", item.FileName)
+			fmt.Printf("%v\n", item.FileName)
 		}
-		println()
 	} else if flags["LongFormat"] && !flags["All"] {
+		fmt.Printf("total %v\n", totalBlocks/2)
 		for _, item := range masterSlice {
 			if !strings.HasPrefix(item.FileName, ".") {
-				fmt.Printf("%v %1s %-5s %-5s %7d %-10s %-10s\n",
+				fmt.Printf("%v %1s %-5s %-5s %7d %-10s %s\n",
 					item.Permissions,
 					item.Nlink,
 					item.User,
@@ -201,17 +198,15 @@ func MyLS(path string, flags map[string]bool) error {
 	} else {
 		for _, item := range masterSlice {
 			if !strings.HasPrefix(item.FileName, ".") {
-				fmt.Printf("%v  ", item.FileName)
+				fmt.Printf("%v\n", item.FileName)
 			}
 		}
-		println()
 	}
 	for _, item := range list {
 		if flags["Recursive"] && item.IsDir() && !strings.HasPrefix(item.Name(), ".") {
-			println()
+			fmt.Printf("\n")
 			newPath := path + "/" + item.Name()
-			fmt.Printf("%v:\n", newPath)
-			err := MyLS(newPath, flags)
+			err := MyLS(newPath, flags, true)
 			if err != nil {
 				return err
 			}
@@ -224,7 +219,7 @@ func main() {
 	flags, err := ParseArgs(os.Args[1:])
 
 	if err != nil {
-		fmt.Println(err)
+		fmt.Printf("%v\n", err)
 		return
 	}
 
@@ -240,14 +235,31 @@ func main() {
 	}
 
 	if flags["Help"] {
-		fmt.Println("Usage: myls [OPTION]... [FILE]...\nOptions:\n  -R, --recursive    list directories recursively\n  -r, --reverse      reverse order\n  -a, --all          include hidden files\n  -l                 long listing format\n  -t                 sort by modification time")
+		fmt.Printf("Usage: myls [OPTION]... [FILE]...\nOptions:\n  -R, --recursive    list directories recursively\n  -r, --reverse      reverse order\n  -a, --all          include hidden files\n  -l                 long listing format\n  -t                 sort by modification time\n")
 		return
 	}
 
-	for _, path := range paths {
-		err := MyLS(path, flags)
+	for i, path := range paths {
+		pathInfos, err := os.Stat(path)
 		if err != nil {
-			fmt.Printf("myls: cannot access '%v': %v\n", path, err)
+			fmt.Printf("%v\n", err)
+			return
+		}
+		if pathInfos.IsDir() && len(paths) == 1 {
+			err2 := MyLS(path, flags, false)
+			if err2 != nil {
+				fmt.Printf("myls: cannot access '%v': %v\n", path, err2)
+			}
+		} else if pathInfos.IsDir() && len(paths) > 1 {
+			err2 := MyLS(path, flags, true)
+			if err2 != nil {
+				fmt.Printf("myls: cannot access '%v': %v\n", path, err2)
+			}
+		} else {
+			fmt.Printf("%v  \n", path)
+		}
+		if i != len(paths)-1 {
+			fmt.Printf("\n")
 		}
 	}
 }
