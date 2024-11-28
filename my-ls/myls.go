@@ -6,6 +6,7 @@ import (
 	"io/fs"
 	"os"
 	"os/user"
+	"strconv"
 	"strings"
 	"syscall"
 	"time"
@@ -16,7 +17,7 @@ type LongFormatInfo struct {
 	Nlink       string
 	User        string
 	Group       string
-	Size        int64
+	Size        int
 	Time        time.Time
 	FileName    string
 }
@@ -151,7 +152,7 @@ func MyLS(path string, flags map[string]bool, showPath bool) error {
 		if group, err := user.LookupGroupId(gId); err == nil {
 			gId = group.Name
 		}
-		element := LongFormatInfo{item.Mode(), nLink, uId, gId, item.Size(), item.ModTime(), item.Name()}
+		element := LongFormatInfo{item.Mode(), nLink, uId, gId, int(item.Size()), item.ModTime(), item.Name()}
 		masterSlice = append(masterSlice, element)
 
 	}
@@ -162,29 +163,58 @@ func MyLS(path string, flags map[string]bool, showPath bool) error {
 	if flags["Reverse"] {
 		ReverseMasterSlice(masterSlice)
 	}
+	var maxNlinkLen, maxUserLen, maxGroupLen, maxLenSize, maxLenTime, maxFileNameLen int
 
 	if flags["LongFormat"] && flags["All"] {
-		fmt.Printf("total %v\n", totalBlocks/2)
+		// First, calculate the maximum lengths for each field
 		for _, item := range masterSlice {
-			fmt.Printf("%v %1s %-5s %-5s %7d %-10s %-10s\n",
-				item.Permissions,
-				item.Nlink,
-				item.User,
-				item.Group,
-				item.Size,
-				item.Time.Format("Jan 02 15:04"),
-				item.FileName,
+
+			if len(item.Nlink) > maxNlinkLen {
+				maxNlinkLen = len(item.Nlink)
+			}
+			if len(item.User) > maxUserLen {
+				maxUserLen = len(item.User)
+			}
+			if len(item.Group) > maxGroupLen {
+				maxGroupLen = len(item.Group)
+			}
+			if len(strconv.Itoa(item.Size)) > maxLenSize {
+				maxLenSize = len(strconv.Itoa(item.Size))
+			}
+			if len(item.Time.Format("Jan 02 15:04")) > maxLenTime {
+				maxLenTime = len(item.Time.Format("Jan 02 15:04"))
+			}
+			if len(item.FileName) > maxFileNameLen {
+				maxFileNameLen = len(item.FileName)
+			}
+		}
+	/***************** ERROR NEED WORK ******************/
+		// Print total blocks
+		fmt.Printf("total %v\n", totalBlocks/2)
+	
+		// Now, print the formatted output with dynamic widths
+		for _, item := range masterSlice {
+			// Correct the formatting string to match the dynamic lengths
+			fmt.Printf("%-*s %-*s %-*s %-*s %*d %-*s %-*s\n",
+				item.Permissions,   // Dynamic width for Permissions
+				item.Nlink, maxNlinkLen,         // Dynamic width for Nlink
+				item.User, maxUserLen,           // Dynamic width for User
+				item.Group, maxGroupLen,         // Dynamic width for Group
+				item.Size, maxLenSize,           // Dynamic width for Size
+				item.Time.Format("Jan 02 15:04"), maxLenTime, // Dynamic width for Time
+				item.FileName, maxFileNameLen,   // Dynamic width for FileName
 			)
 		}
 	} else if !flags["LongFormat"] && flags["All"] {
 		for _, item := range masterSlice {
-			fmt.Printf("%v\n", item.FileName)
+			fmt.Printf("%v  ", item.FileName)
 		}
+		println()
 	} else if flags["LongFormat"] && !flags["All"] {
 		fmt.Printf("total %v\n", totalBlocks/2)
 		for _, item := range masterSlice {
 			if !strings.HasPrefix(item.FileName, ".") {
-				fmt.Printf("%v %1s %-5s %-5s %7d %-10s %s\n",
+				fmt.Printf("%v %"+strconv.Itoa(len(item.Nlink))+"s %-5s %-5s %7d %-10s %s\n",
 					item.Permissions,
 					item.Nlink,
 					item.User,
@@ -198,9 +228,10 @@ func MyLS(path string, flags map[string]bool, showPath bool) error {
 	} else {
 		for _, item := range masterSlice {
 			if !strings.HasPrefix(item.FileName, ".") {
-				fmt.Printf("%v\n", item.FileName)
+				fmt.Printf("%v  ", item.FileName)
 			}
 		}
+		println()
 	}
 	for _, item := range list {
 		if flags["Recursive"] && item.IsDir() && !strings.HasPrefix(item.Name(), ".") {
