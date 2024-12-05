@@ -163,48 +163,66 @@ func MyLS(path string, flags map[string]bool, showPath bool) error {
 	if flags["Reverse"] {
 		ReverseMasterSlice(masterSlice)
 	}
-	var maxNlinkLen, maxUserLen, maxGroupLen, maxLenSize, maxLenTime, maxFileNameLen int
+	var maxPermLen, maxNlinkLen, maxUserLen, maxGroupLen, maxLenSize, maxLenTime, maxFileNameLen int
 
+	// First, calculate the maximum lengths for each field
 	if flags["LongFormat"] && flags["All"] {
 		// First, calculate the maximum lengths for each field
 		for _, item := range masterSlice {
+			// Permissions field length calculation
+			permStr := strconv.Itoa(int(item.Permissions)) // If Permissions is an int, convert to string
+			if len(permStr) > maxPermLen {
+				maxPermLen = len(permStr)
+			}
 
+			// Nlink length calculation
 			if len(item.Nlink) > maxNlinkLen {
 				maxNlinkLen = len(item.Nlink)
 			}
+
+			// User length calculation
 			if len(item.User) > maxUserLen {
 				maxUserLen = len(item.User)
 			}
+
+			// Group length calculation
 			if len(item.Group) > maxGroupLen {
 				maxGroupLen = len(item.Group)
 			}
+
+			// Size length calculation
 			if len(strconv.Itoa(item.Size)) > maxLenSize {
 				maxLenSize = len(strconv.Itoa(item.Size))
 			}
+
+			// Time length calculation
 			if len(item.Time.Format("Jan 02 15:04")) > maxLenTime {
 				maxLenTime = len(item.Time.Format("Jan 02 15:04"))
 			}
+
+			// FileName length calculation
 			if len(item.FileName) > maxFileNameLen {
 				maxFileNameLen = len(item.FileName)
 			}
 		}
-	/***************** ERROR NEED WORK ******************/
+
 		// Print total blocks
 		fmt.Printf("total %v\n", totalBlocks/2)
-	
+
 		// Now, print the formatted output with dynamic widths
 		for _, item := range masterSlice {
 			// Correct the formatting string to match the dynamic lengths
-			fmt.Printf("%-*s %-*s %-*s %-*s %*d %-*s %-*s\n",
-				item.Permissions,   // Dynamic width for Permissions
-				item.Nlink, maxNlinkLen,         // Dynamic width for Nlink
-				item.User, maxUserLen,           // Dynamic width for User
-				item.Group, maxGroupLen,         // Dynamic width for Group
-				item.Size, maxLenSize,           // Dynamic width for Size
-				item.Time.Format("Jan 02 15:04"), maxLenTime, // Dynamic width for Time
-				item.FileName, maxFileNameLen,   // Dynamic width for FileName
+			fmt.Printf("%-*s %*s %-*s %-*s %*d %-*s %-*s\n",
+				maxPermLen, item.Permissions.String(), // Dynamic width for Permissions
+				maxNlinkLen, item.Nlink, // Dynamic width for Nlink
+				maxUserLen, item.User, // Dynamic width for User
+				maxGroupLen, item.Group, // Dynamic width for Group
+				maxLenSize, item.Size, // Dynamic width for Size
+				maxLenTime, item.Time.Format("Jan 2 15:04"), // Dynamic width for Time
+				maxFileNameLen, item.FileName, // Dynamic width for FileName
 			)
 		}
+
 	} else if !flags["LongFormat"] && flags["All"] {
 		for _, item := range masterSlice {
 			fmt.Printf("%v  ", item.FileName)
@@ -213,15 +231,50 @@ func MyLS(path string, flags map[string]bool, showPath bool) error {
 	} else if flags["LongFormat"] && !flags["All"] {
 		fmt.Printf("total %v\n", totalBlocks/2)
 		for _, item := range masterSlice {
+			// Permissions field length calculation
+			permStr := strconv.Itoa(int(item.Permissions)) // If Permissions is an int, convert to string
+			if len(permStr) > maxPermLen {
+				maxPermLen = len(permStr)
+			}
+
+			// Nlink length calculation
+			if len(item.Nlink) > maxNlinkLen {
+				maxNlinkLen = len(item.Nlink)
+			}
+
+			// User length calculation
+			if len(item.User) > maxUserLen {
+				maxUserLen = len(item.User)
+			}
+
+			// Group length calculation
+			if len(item.Group) > maxGroupLen {
+				maxGroupLen = len(item.Group)
+			}
+
+			// Size length calculation
+			if len(strconv.Itoa(item.Size)) > maxLenSize {
+				maxLenSize = len(strconv.Itoa(item.Size))
+			}
+
+			// Time length calculation
+			if len(item.Time.Format("Jan 02 15:04")) > maxLenTime {
+				maxLenTime = len(item.Time.Format("Jan 02 15:04"))
+			}
+
+			// FileName length calculation
+			if len(item.FileName) > maxFileNameLen {
+				maxFileNameLen = len(item.FileName)
+			}
 			if !strings.HasPrefix(item.FileName, ".") {
-				fmt.Printf("%v %"+strconv.Itoa(len(item.Nlink))+"s %-5s %-5s %7d %-10s %s\n",
-					item.Permissions,
-					item.Nlink,
-					item.User,
-					item.Group,
-					item.Size,
-					item.Time.Format("Jan 02 15:04"),
-					item.FileName,
+				fmt.Printf("%-*s %*s %-*s %-*s %*d %-*s %-*s\n",
+					maxPermLen, item.Permissions.String(), // Dynamic width for Permissions
+					maxNlinkLen, item.Nlink, // Dynamic width for Nlink
+					maxUserLen, item.User, // Dynamic width for User
+					maxGroupLen, item.Group, // Dynamic width for Group
+					maxLenSize, item.Size, // Dynamic width for Size
+					maxLenTime, item.Time.Format("Jan 2 15:04"), // Dynamic width for Time
+					maxFileNameLen, item.FileName, // Dynamic width for FileName
 				)
 			}
 		}
