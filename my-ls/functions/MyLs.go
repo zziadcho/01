@@ -19,7 +19,6 @@ func MyLS(path string, flags map[string]bool, showPath bool) error {
 	if err != nil {
 		return err
 	}
-	var fileType string
 	var uId, gId, nLink string
 	var accumulatedLength int
 	for _, item := range list {
@@ -40,13 +39,6 @@ func MyLS(path string, flags map[string]bool, showPath bool) error {
 		}
 		if group, err := user.LookupGroupId(gId); err == nil {
 			gId = group.Name
-		}
-		if item.IsDir() {
-			fileType = "d"
-		} else if item.Mode()&os.ModeDevice != 0 {
-			fileType = "b" // Block device
-		} else {
-			fileType = "-" // Regular file
 		}
 		element := LongFormatInfo{item.Mode(), nLink, uId, gId, int(item.Size()), item.ModTime(), item.Name()}
 		accumulatedLength += len(item.Name())
@@ -98,10 +90,8 @@ func MyLS(path string, flags map[string]bool, showPath bool) error {
 		fmt.Printf("total %v\n", totalBlocks/2)
 
 		for _, item := range masterSlice {
-			// Check if the file is a symbolic link and add the arrow if it is
 			symLinkArrow := ""
 			if item.Permissions&os.ModeSymlink != 0 {
-				// Get the target of the symbolic link
 				linkTarget, err := os.Readlink(path + "/" + item.FileName)
 				if err == nil {
 					symLinkArrow = fmt.Sprintf(" -> %s", linkTarget)
@@ -109,7 +99,7 @@ func MyLS(path string, flags map[string]bool, showPath bool) error {
 			}
 
 			fmt.Printf("%-*s %*s %-*s %-*s %*d %-*s %s\n",
-				maxPermLen, fileType+strconv.Itoa(int(item.Permissions)),
+				maxPermLen, strings.ToLower(fmt.Sprintf("%v ", item.Permissions)),
 				maxNlinkLen, item.Nlink,
 				maxUserLen, item.User,
 				maxGroupLen, item.Group,
@@ -159,10 +149,8 @@ func MyLS(path string, flags map[string]bool, showPath bool) error {
 		fmt.Printf("total %v\n", totalBlocks/2)
 		for _, item := range masterSlice {
 			if !strings.HasPrefix(item.FileName, ".") {
-				// Check if the file is a symbolic link and add the arrow if it is
 				symLinkArrow := ""
 				if item.Permissions&os.ModeSymlink != 0 {
-					// Get the target of the symbolic link
 					linkTarget, err := os.Readlink(path + "/" + item.FileName)
 					if err == nil {
 						symLinkArrow = fmt.Sprintf(" -> %s", linkTarget)
@@ -170,7 +158,7 @@ func MyLS(path string, flags map[string]bool, showPath bool) error {
 				}
 
 				fmt.Printf("%-*s %*s %-*s %-*s %*d %-*s %s\n",
-					maxPermLen, fileType+strconv.Itoa(int(item.Permissions)),
+					maxPermLen, strings.ToLower(fmt.Sprintf("%v ", item.Permissions)),
 					maxNlinkLen, item.Nlink,
 					maxUserLen, item.User,
 					maxGroupLen, item.Group,
