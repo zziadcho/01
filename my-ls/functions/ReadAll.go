@@ -14,11 +14,11 @@ func ReadAll(path string) ([]fs.FileInfo, error) {
 		return List, errors.New("error reading the directory: " + err.Error())
 	}
 
-	currentDir, err := os.Stat(".")
+	currentDir, err := os.Stat(path + "/" + ".")
 	if err != nil {
 		return List, err
 	}
-	parentDir, err := os.Stat("..")
+	parentDir, err := os.Stat(path + "/" + "..")
 	if err != nil {
 		return List, err
 	}

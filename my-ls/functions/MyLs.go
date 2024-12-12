@@ -19,7 +19,7 @@ func MyLS(path string, flags map[string]bool, showPath bool) error {
 	if err != nil {
 		return err
 	}
-	var uId, gId, nLink string
+	var uId, gId, nLink, major, minor string
 	var accumulatedLength int
 	for _, item := range list {
 		if stat, ok := item.Sys().(*syscall.Stat_t); ok {
@@ -33,6 +33,8 @@ func MyLS(path string, flags map[string]bool, showPath bool) error {
 			uId = fmt.Sprintf("%d", stat.Uid)
 			gId = fmt.Sprintf("%d", stat.Gid)
 			nLink = fmt.Sprintf("%d", stat.Nlink)
+			major = fmt.Sprintf("%v,", Major(stat.Rdev))
+			minor = fmt.Sprintf("%v", Minor(stat.Rdev))
 		}
 		if user, err := user.LookupId(uId); err == nil {
 			uId = user.Username
@@ -40,20 +42,20 @@ func MyLS(path string, flags map[string]bool, showPath bool) error {
 		if group, err := user.LookupGroupId(gId); err == nil {
 			gId = group.Name
 		}
-		element := LongFormatInfo{item.Mode(), nLink, uId, gId, int(item.Size()), item.ModTime(), item.Name()}
+		element := LongFormatInfo{item.Mode(), nLink, uId, gId, major, minor, int(item.Size()), item.ModTime(), item.Name()}
 		accumulatedLength += len(item.Name())
 		masterSlice = append(masterSlice, element)
 	}
 	if flags["Time"] {
 		SortByTime(masterSlice)
 	} else {
-		SortByName(masterSlice)
+		SortLs(masterSlice)
 	}
 
 	if flags["Reverse"] {
 		ReverseOrder(masterSlice)
 	}
-	var maxPermLen, maxNlinkLen, maxUserLen, maxGroupLen, maxLenSize, maxLenTime, maxFileNameLen int
+	var maxPermLen, maxNlinkLen, maxUserLen, maxGroupLen, maxLenSize, maxLenTime, maxFileNameLen, maxMinorLen, maxMajorLen int
 
 	if flags["LongFormat"] && flags["All"] {
 		for _, item := range masterSlice {
@@ -85,6 +87,14 @@ func MyLS(path string, flags map[string]bool, showPath bool) error {
 			if len(item.FileName) > maxFileNameLen {
 				maxFileNameLen = len(item.FileName)
 			}
+
+			if len(item.Minor) > maxMinorLen {
+				maxMinorLen = len(item.Minor)
+			}
+
+			if len(item.Major) > maxMajorLen {
+				maxMajorLen = len(item.Major)
+			}
 		}
 
 		fmt.Printf("total %v\n", totalBlocks/2)
@@ -97,18 +107,21 @@ func MyLS(path string, flags map[string]bool, showPath bool) error {
 					symLinkArrow = fmt.Sprintf(" -> %s", linkTarget)
 				}
 			}
+			formattedPerms := formatPermissions(item.Permissions)
 
-			fmt.Printf("%-*s %*s %-*s %-*s %*d %-*s %s\n",
-				maxPermLen, strings.ToLower(fmt.Sprintf("%v ", item.Permissions)),
+			fmt.Printf("%*s %*s %-*s %-*s %-*s %-*s %*d %-*s %s %s\n",
+				maxPermLen, formattedPerms,
 				maxNlinkLen, item.Nlink,
 				maxUserLen, item.User,
 				maxGroupLen, item.Group,
+				maxMajorLen, major,
+				maxMinorLen, minor,
 				maxLenSize, item.Size,
 				maxLenTime, FormatTime(item.Time),
-				item.FileName+symLinkArrow,
+				item.FileName,
+				symLinkArrow,
 			)
 		}
-
 	} else if !flags["LongFormat"] && flags["All"] {
 		for _, item := range masterSlice {
 			fmt.Printf("%v  ", item.FileName)
@@ -156,18 +169,18 @@ func MyLS(path string, flags map[string]bool, showPath bool) error {
 						symLinkArrow = fmt.Sprintf(" -> %s", linkTarget)
 					}
 				}
-
-				fmt.Printf("%-*s %*s %-*s %-*s %*d %-*s %s\n",
-					maxPermLen, strings.ToLower(fmt.Sprintf("%v ", item.Permissions)),
+				formattedPerms := formatPermissions(item.Permissions)
+				fmt.Printf("%*s %*s %-*s %-*s %*d %-*s %s %s\n",
+					maxPermLen, formattedPerms,
 					maxNlinkLen, item.Nlink,
 					maxUserLen, item.User,
 					maxGroupLen, item.Group,
 					maxLenSize, item.Size,
 					maxLenTime, FormatTime(item.Time),
-					item.FileName+symLinkArrow,
+					item.FileName,
+					symLinkArrow,
 				)
 			}
-
 		}
 	} else if 2*(len(masterSlice)-1)+accumulatedLength < 132 {
 		for _, item := range masterSlice {
@@ -183,10 +196,11 @@ func MyLS(path string, flags map[string]bool, showPath bool) error {
 			}
 		}
 	}
-	for _, item := range list {
-		if flags["Recursive"] && item.IsDir() && !strings.HasPrefix(item.Name(), ".") {
+
+	for _, item := range masterSlice {
+		if flags["Recursive"] && item.Permissions.IsDir() && item.FileName != "." && item.FileName != ".." {
 			fmt.Printf("\n")
-			newPath := path + "/" + item.Name()
+			newPath := path + "/" + item.FileName
 			err := MyLS(newPath, flags, true)
 			if err != nil {
 				return err

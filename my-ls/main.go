@@ -48,6 +48,9 @@ func main() {
 		return
 	}
 
+	if flags["Recursive"] {
+		fmt.Printf(".:\n")
+	}
 	for i, path := range paths {
 		pathInfos, err := os.Stat(path)
 		if err != nil {
