@@ -9,26 +9,32 @@ import (
 	"syscall"
 )
 
-func MyLS(path string, flags map[string]bool, showPath bool) error {
+func MyLS(path string, flags map[string]bool, showPath bool, files []string) error {
 	if showPath {
 		fmt.Printf("%v:\n", path)
 	}
 	masterSlice := []LongFormatInfo{}
 	var list []os.FileInfo
 	var totalBlocks int64
+	var err error
 	var uId, gId, nLink, major, minor string
 	var accumulatedLength int
-	fileInfo, err := os.Stat(path)
-	if err != nil {
-		fmt.Printf("%v", err)
-	}
-	if !fileInfo.IsDir() {
+	for _, file := range files {
+		fileInfo, err := os.Stat(file)
+		if err != nil {
+			fmt.Printf("%v", err)
+		}
+		if fileInfo.Mode()&os.ModeSymlink != 0 { // have to skip rest of the code when symlink  
+			return showSymlink(path)
+		} 
 		list = append(list, fileInfo)
-	} else {
-		list, err = ReadAll(path)
+
 	}
-	if err != nil {
-		return err
+	if files == nil {
+		list, err = ReadAll(path)
+		if err != nil {
+			return err
+		}
 	}
 	for _, item := range list {
 		if stat, ok := item.Sys().(*syscall.Stat_t); ok {
@@ -108,8 +114,9 @@ func MyLS(path string, flags map[string]bool, showPath bool) error {
 				maxMajorLen = len(item.Major)
 			}
 		}
-
-		fmt.Printf("total %v\n", totalBlocks/2)
+		if path != "" {
+			fmt.Printf("total %v\n", totalBlocks/2)
+		}
 
 		for _, item := range masterSlice {
 			symLinkArrow := ""
@@ -154,6 +161,9 @@ func MyLS(path string, flags map[string]bool, showPath bool) error {
 		fmt.Printf("\n")
 	} else if flags["LongFormat"] && !flags["All"] {
 		for _, item := range masterSlice {
+			if strings.HasPrefix(item.FileName, ".") {
+				continue
+			}
 			permStr := strconv.Itoa(int(item.Permissions))
 			if len(permStr) > maxPermLen {
 				maxPermLen = len(permStr)
@@ -192,8 +202,9 @@ func MyLS(path string, flags map[string]bool, showPath bool) error {
 			}
 		}
 
-		fmt.Printf("total %v\n", totalBlocks/2)
-
+		if path != "" {
+			fmt.Printf("total %v\n", totalBlocks/2)
+		}
 		for _, item := range masterSlice {
 			if strings.HasPrefix(item.FileName, ".") {
 				continue
@@ -219,7 +230,7 @@ func MyLS(path string, flags map[string]bool, showPath bool) error {
 					symLinkArrow,
 				)
 			} else {
-				fmt.Printf("%*s %*s %*s %*s %*d %-*s %s %s\n",
+				fmt.Printf("%*s %*s %*s %*s %*d %-*s %s %s \n",
 					maxPermLen, formattedPerms,
 					maxNlinkLen, item.Nlink,
 					maxUserLen, item.User,
@@ -253,7 +264,7 @@ func MyLS(path string, flags map[string]bool, showPath bool) error {
 			}
 			fmt.Printf("\n")
 			newPath := path + "/" + item.FileName
-			err := MyLS(newPath, flags, true)
+			err := MyLS(newPath, flags, true, nil)
 			if err != nil {
 				return err
 			}

@@ -93,29 +93,3 @@
 ##### Create directory that contains files and link for this directory and run both my-ls-1 and the system command ls with the arguments: `"-l <symlink dir>"`
 
 ###### Is the displayed output the same?
-
-###### As an auditor, is this project up to every standard? If not, why are you failing the project?(Empty Work, Incomplete Work, Invalid compilation, Cheating, Crashing, Leaks)
-
-#### General
-
-###### +Does the program runs with colors as in the ls command?
-
-###### +Does the program has other flags except for the mandatory ones?
-
-##### Try running the program with `"-R ~"` and with the command time before the program name (ex: "time ./my-ls-1 -R ~").
-
-###### +Is the real time less than 1,5 seconds?
-
-#### Basic
-
-###### +Does the code obey the [good practices](../../good-practices/README.md)?
-
-###### +Is there a test file for this code?
-
-###### +Are the tests checking each possible case?
-
-#### Social
-
-###### +Did you learn anything from this project?
-
-###### +Would you recommend/nominate this program as an example for the rest of the school?

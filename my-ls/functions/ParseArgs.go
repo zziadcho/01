@@ -33,7 +33,7 @@ func ParseArgs(args []string) (map[string]bool, error) {
 					return Flags, fmt.Errorf("myls: unrecognized option -- '%v'\nTry 'myls --help' for more information", string(arg[i]))
 				}
 			}
-		} else if strings.HasPrefix(arg, "-") {
+		} else if strings.HasPrefix(arg, "-") && arg != "-" {
 			arg = strings.TrimPrefix(arg, "-")
 
 			for i := 0; i < len(arg); i++ {
