@@ -10,11 +10,23 @@ import (
 )
 
 func MyLS(path string, flags map[string]bool, showPath bool) error {
+	if showPath {
+		fmt.Printf("%v:\n", path)
+	}
 	masterSlice := []LongFormatInfo{}
+	var list []os.FileInfo
 	var totalBlocks int64
 	var uId, gId, nLink, major, minor string
 	var accumulatedLength int
-	list, err := ReadAll(path)
+	fileInfo, err := os.Stat(path)
+	if err != nil {
+		fmt.Printf("%v", err)
+	}
+	if !fileInfo.IsDir() {
+		list = append(list, fileInfo)
+	} else {
+		list, err = ReadAll(path)
+	}
 	if err != nil {
 		return err
 	}
@@ -46,7 +58,6 @@ func MyLS(path string, flags map[string]bool, showPath bool) error {
 		element := LongFormatInfo{item.Mode(), nLink, uId, gId, major, minor, int(item.Size()), item.ModTime(), item.Name()}
 		accumulatedLength += len(item.Name())
 		masterSlice = append(masterSlice, element)
-		//fmt.Println(major)
 	}
 	if flags["Time"] {
 		SortByTime(masterSlice)
