@@ -5,7 +5,6 @@ import (
 	"io/fs"
 	"strings"
 	"time"
-	"unicode"
 )
 
 type LongFormatInfo struct {
@@ -41,7 +40,7 @@ func SortLs(slice []LongFormatInfo) {
 }
 func getKey(filename string) string {
 	for i := 0; i < len(filename); i++ {
-		if !unicode.IsDigit(rune(filename[i])) && !unicode.IsLetter(rune(filename[i])) {
+		if !IsDigit(rune(filename[i])) && !IsLetter(rune(filename[i])) {
 			filename = filename[:i] + filename[i+1:]
 			i--
 		}
@@ -82,15 +81,22 @@ func ReverseOrder(slice []LongFormatInfo) []LongFormatInfo {
 	return slice
 }
 
-func FormatTime(t time.Time) string {
-	// Format the time normally
-	formatted := t.Format("Jan 02 15:04")
+func FormatTime(z time.Time) string {
+    a, b, c, d, res := z.Month(), z.Day(), z.Year(), fmt.Sprintf("%02d:%02d", z.Hour(), z.Minute()), ""
+    ok := time.Now().Sub(z)
+    ko := ok.Hours()
+    if ko < 4380 {
+        res = fmt.Sprintf("%s %2d %5s", fmt.Sprintf("%v", a)[:3], b, d)
+    } else {
+        res = fmt.Sprintf("%s %2d %5d", fmt.Sprintf("%v", a)[:3], b, c)
+    }
+    return res
+}
 
-	// Extract the day part, ensuring only it is adjusted
-	day := t.Day()
-	if day < 10 {
-		formatted = fmt.Sprintf("%s  %d %s", t.Format("Jan"), day, t.Format("15:04"))
-	}
+func IsLetter(r rune )bool {
+	return (r >='a' && r <= 'z') || (r >='A' && r <= 'Z') 
+}
 
-	return formatted
+func IsDigit (r rune) bool {
+	return (r>='0' && r<= '9')
 }
