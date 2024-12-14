@@ -10,6 +10,9 @@ import (
 )
 
 func MyLS(path string, flags map[string]bool, showPath bool) error {
+	if showPath {
+		fmt.Printf("%v:\n", path)
+	}
 	masterSlice := []LongFormatInfo{}
 	var totalBlocks int64
 	var uId, gId, nLink, major, minor string
@@ -18,6 +21,7 @@ func MyLS(path string, flags map[string]bool, showPath bool) error {
 	if err != nil {
 		return err
 	}
+	// !info.IsDir() && flags["LongFormat"] 
 	for _, item := range list {
 		if stat, ok := item.Sys().(*syscall.Stat_t); ok {
 			if flags["All"] {
