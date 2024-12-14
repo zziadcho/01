@@ -22,9 +22,8 @@ func ReadAll(path string) ([]fs.FileInfo, error) {
 	if err != nil {
 		return List, err
 	}
-
 	List = append(List, currentDir, parentDir)
-
+	
 	for _, item := range items {
 		itemInfo, err := item.Info()
 		if err != nil {

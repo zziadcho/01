@@ -20,15 +20,17 @@ func MyLS(path string, flags map[string]bool, showPath bool, files []string) err
 	var uId, gId, nLink, major, minor string
 	var accumulatedLength int
 	for _, file := range files {
-		fileInfo, err := os.Stat(file)
+		fileInfo, err := os.Lstat(file)
 		if err != nil {
 			fmt.Printf("%v", err)
 		}
-		if fileInfo.Mode()&os.ModeSymlink != 0 { // have to skip rest of the code when symlink  
-			return showSymlink(path)
-		} 
-		list = append(list, fileInfo)
-
+		stat, _ := fileInfo.Sys().(*syscall.Stat_t)
+		if (stat.Mode & syscall.S_IFLNK) != 0 && fileInfo.IsDir() { 
+			showSymlink(fileInfo.Name())
+			fmt.Printf("\n")
+		} else {
+			list = append(list, fileInfo)
+		}
 	}
 	if files == nil {
 		list, err = ReadAll(path)
@@ -126,7 +128,7 @@ func MyLS(path string, flags map[string]bool, showPath bool, files []string) err
 					symLinkArrow = fmt.Sprintf("-> %s", linkTarget)
 				}
 			}
-			formattedPerms := formatPermissions(item.Permissions)
+			formattedPerms := FormatPermissions(item.Permissions)
 			placeHolder := ""
 			if item.Permissions&os.ModeDevice != 0 || item.Permissions&os.ModeCharDevice != 0 {
 				fmt.Printf("%*s %*s %-*s %-*s %*s %*s %-*s %s %s\n",
@@ -216,7 +218,7 @@ func MyLS(path string, flags map[string]bool, showPath bool, files []string) err
 					symLinkArrow = fmt.Sprintf("-> %s", linkTarget)
 				}
 			}
-			formattedPerms := formatPermissions(item.Permissions)
+			formattedPerms := FormatPermissions(item.Permissions)
 			if item.Permissions&os.ModeDevice != 0 || item.Permissions&os.ModeCharDevice != 0 {
 				fmt.Printf("%*s %*s %-*s %-*s %*s %*s %-*s %s %s\n",
 					maxPermLen, formattedPerms,

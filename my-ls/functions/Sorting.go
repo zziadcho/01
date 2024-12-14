@@ -82,21 +82,40 @@ func ReverseOrder(slice []LongFormatInfo) []LongFormatInfo {
 }
 
 func FormatTime(z time.Time) string {
-    a, b, c, d, res := z.Month(), z.Day(), z.Year(), fmt.Sprintf("%02d:%02d", z.Hour(), z.Minute()), ""
-    ok := time.Now().Sub(z)
-    ko := ok.Hours()
-    if ko < 4380 {
-        res = fmt.Sprintf("%s %2d %5s", fmt.Sprintf("%v", a)[:3], b, d)
-    } else {
-        res = fmt.Sprintf("%s %2d %5d", fmt.Sprintf("%v", a)[:3], b, c)
-    }
-    return res
+	a, b, c, d, res := z.Month(), z.Day(), z.Year(), fmt.Sprintf("%02d:%02d", z.Hour(), z.Minute()), ""
+	ok := time.Now().Sub(z)
+	ko := ok.Hours()
+	if ko < 4380 {
+		res = fmt.Sprintf("%s %2d %5s", fmt.Sprintf("%v", a)[:3], b, d)
+	} else {
+		res = fmt.Sprintf("%s %2d %5d", fmt.Sprintf("%v", a)[:3], b, c)
+	}
+	return res
 }
 
-func IsLetter(r rune )bool {
-	return (r >='a' && r <= 'z') || (r >='A' && r <= 'Z') 
+func IsLetter(r rune) bool {
+	return (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z')
 }
 
-func IsDigit (r rune) bool {
-	return (r>='0' && r<= '9')
+func IsDigit(r rune) bool {
+	return (r >= '0' && r <= '9')
+}
+
+func RemoveDuplicates(slice1 *[]string, slice2 []string) int {
+	duplicates := make(map[string]bool)
+	for _, elem := range slice2 {
+		duplicates[elem] = true
+	}
+
+	original := *slice1
+	filtered := original[:0]
+	for _, elem := range original {
+		if !duplicates[elem] {
+			filtered = append(filtered, elem)
+		}
+	}
+	asa7bi := len(*slice1)
+	*slice1 = filtered
+
+	return asa7bi - len(filtered)
 }

@@ -5,13 +5,13 @@ import (
 	"os"
 )
 
-func formatPermissions(mode os.FileMode) string {
+func FormatPermissions(mode os.FileMode) string {
     typeChar := '-'
     switch {
-    case mode&os.ModeDir != 0:
-        typeChar = 'd'
     case mode&os.ModeSymlink != 0:
         typeChar = 'l'
+    case mode&os.ModeDir != 0:
+        typeChar = 'd'
     case mode&os.ModeCharDevice != 0:
         typeChar = 'c'
     case mode&os.ModeDevice != 0:
