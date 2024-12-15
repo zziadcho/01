@@ -1,7 +1,6 @@
 package functions
 
 import (
-	"errors"
 	"io/fs"
 	"os"
 )
@@ -11,7 +10,7 @@ func ReadAll(path string) ([]fs.FileInfo, error) {
 
 	items, err := os.ReadDir(path)
 	if err != nil {
-		return List, errors.New("error reading the directory: " + err.Error())
+		return List, err
 	}
 
 	currentDir, err := os.Stat(path + "/" + ".")

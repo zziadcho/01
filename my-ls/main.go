@@ -14,7 +14,7 @@ func main() {
 		fmt.Printf("%v\n", err)
 		return
 	}
-	var fileNum bool
+	// var fileNum bool
 	var paths []string
 	var args []string
 	for _, arg := range os.Args[1:] {
@@ -27,28 +27,14 @@ func main() {
 			}
 			if !argInfo.IsDir() {
 				args = append(args, arg)
-				fileNum = true
+				// fileNum = true
 			}
 		}
 	}
 	functions.SortStringByNam(args)
-	for _, arg := range args {
-		argInfo, err := os.Lstat(arg)
-		if err != nil {
-			fmt.Printf("%v\n", err)
-			return
-		}
-		if !argInfo.IsDir() {
-			err := functions.MyLS(arg, flags, false)
-			if err != nil {
-				fmt.Printf("%v\n", err)
-				return
-			}
-		}
-	}
-	if fileNum {
-		fmt.Printf("\n")
-	}
+	// if fileNum {
+	// 	fmt.Printf("\n")
+	// }
 
 	if len(paths) == 0 {
 		paths = append(paths, ".")
@@ -83,6 +69,13 @@ func main() {
 				fmt.Printf("myls: cannot access '%v': %v\n", path, err2)
 				return
 			}
+		} else {
+			err2 := functions.MyLS(path, flags, true)
+			if err2 != nil {
+				fmt.Printf("myls: cannot access '%v': %v\n", path, err2)
+				return
+			}
 		}
+
 	}
 }

@@ -10,18 +10,62 @@ import (
 )
 
 func MyLS(path string, flags map[string]bool, showPath bool) error {
-	if showPath {
-		fmt.Printf("%v:\n", path)
-	}
-	masterSlice := []LongFormatInfo{}
-	var totalBlocks int64
+	var masterSlice []LongFormatInfo
+	var maxPermLen, maxNlinkLen, maxUserLen, maxGroupLen, maxLenSize, maxLenTime, maxFileNameLen, maxMinorLen, maxMajorLen int
 	var uId, gId, nLink, major, minor string
 	var accumulatedLength int
+	var totalBlocks int64
+	info, err := os.Lstat(path)
+	if err != nil {
+		return err
+	}
+	if !info.IsDir() {
+		if stat, ok := info.Sys().(*syscall.Stat_t); ok {
+			uId = fmt.Sprintf("%d", stat.Uid)
+			gId = fmt.Sprintf("%d", stat.Gid)
+			nLink = fmt.Sprintf("%d", stat.Nlink)
+
+			if stat.Mode&syscall.S_IFBLK != 0 || stat.Mode&syscall.S_IFCHR != 0 {
+				major, minor = fmt.Sprintf("%v,", Major(stat.Rdev)), fmt.Sprintf("%v", Minor(stat.Rdev))
+			} else {
+				major = ""
+				minor = ""
+			}
+		}
+
+		if user, err := user.LookupId(uId); err == nil {
+			uId = user.Username
+		}
+		if group, err := user.LookupGroupId(gId); err == nil {
+			gId = group.Name
+		}
+
+		element := LongFormatInfo{
+			Permissions: info.Mode(),
+			Nlink:       nLink,
+			User:        uId,
+			Group:       gId,
+			Major:       major,
+			Minor:       minor,
+			Size:        int(info.Size()),
+			Time:        info.ModTime(),
+			FileName:    info.Name(),
+		}
+
+		masterSlice = append(masterSlice, element)
+	}
+	pathInfo, err := os.Lstat(path)
+	if err != nil {
+		return err
+	}
+	if pathInfo.IsDir() && showPath {
+		fmt.Printf("%v:\n", pathInfo.Name())
+	}
+
 	list, err := ReadAll(path)
 	if err != nil {
 		return err
 	}
-	// !info.IsDir() && flags["LongFormat"] 
 	for _, item := range list {
 		if stat, ok := item.Sys().(*syscall.Stat_t); ok {
 			if flags["All"] {
@@ -37,8 +81,7 @@ func MyLS(path string, flags map[string]bool, showPath bool) error {
 			if stat.Mode&syscall.S_IFBLK != 0 || stat.Mode&syscall.S_IFCHR != 0 {
 				major, minor = fmt.Sprintf("%v,", Major(stat.Rdev)), fmt.Sprintf("%v", Minor(stat.Rdev))
 			} else {
-				major = "0"
-				minor = "0"
+				major, minor = "", ""
 			}
 		}
 		if user, err := user.LookupId(uId); err == nil {
@@ -50,7 +93,6 @@ func MyLS(path string, flags map[string]bool, showPath bool) error {
 		element := LongFormatInfo{item.Mode(), nLink, uId, gId, major, minor, int(item.Size()), item.ModTime(), item.Name()}
 		accumulatedLength += len(item.Name())
 		masterSlice = append(masterSlice, element)
-		//fmt.Println(major)
 	}
 	if flags["Time"] {
 		SortByTime(masterSlice)
@@ -61,7 +103,6 @@ func MyLS(path string, flags map[string]bool, showPath bool) error {
 	if flags["Reverse"] {
 		ReverseOrder(masterSlice)
 	}
-	var maxPermLen, maxNlinkLen, maxUserLen, maxGroupLen, maxLenSize, maxLenTime, maxFileNameLen, maxMinorLen, maxMajorLen int
 
 	if flags["LongFormat"] && flags["All"] {
 		for _, item := range masterSlice {
@@ -224,13 +265,6 @@ func MyLS(path string, flags map[string]bool, showPath bool) error {
 				)
 			}
 		}
-	} else if 2*(len(masterSlice)-1)+accumulatedLength < 132 {
-		for _, item := range masterSlice {
-			if !strings.HasPrefix(item.FileName, ".") {
-				fmt.Printf("%v  ", item.FileName)
-			}
-		}
-		fmt.Printf("\n")
 	} else {
 		for _, item := range masterSlice {
 			if !strings.HasPrefix(item.FileName, ".") {
