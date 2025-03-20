@@ -1,52 +1,64 @@
-const canvas = document.getElementById("main-screen")
-const ctx = canvas.getContext("2d")
-const clockTick = new Event('clockTick')
+//player stat&info
+let playerX = 0, playerY = 0
+let playerWidth = 50, playerHeight = 50 
+const playerSpeed = 5
 
-let up = false
-let down = false
-let left = false
-let right = false
-let space = false
+//basic movement
+const startGame = () => {
+    const player = Object.assign(document.createElement("div"), {
+        id: "player",
+    })
+    const button = document.getElementById("start")
+    button.style.display = "none"
+    document.body.appendChild(player)
 
-document.addEventListener('keydown', function (e) {
-    if (e.key == "w") {
-        up = true
-    }
-    if (e.key == "s") {
-        down = true
-    }
-    if (e.key == "a") {
-        left = true
-    }
-    if (e.key == "d") {
-        right = true
-    }
-    if (e.key == " ") {
-        space = true
-    }
-})
+    const pressedKeys = {}
 
-document.addEventListener('keyup', function (e) {
-    if (e.key == "w") {
-        up = false
-    }
-    if (e.key == "s") {
-        down = false
-    }
-    if (e.key == "a") {
-        left = false
-    }
-    if (e.key == "d") {
-        right = false
-    }
-    if (e.key == " ") {
-        space = false
-    }
-})
+    document.addEventListener("keydown", function (e) {
+        pressedKeys[e.key] = true
+    })
 
-function fireClock() {
-    document.dispatchEvent(clockTick)
+    document.addEventListener("keyup", function (e) {
+        pressedKeys[e.key] = false
+    })
+
+    const gameLoop = () => {
+        if (pressedKeys['w']) {
+            playerY -= playerSpeed
+        }
+        if (pressedKeys['d']) {
+            playerX += playerSpeed
+        }
+        if (pressedKeys['s']) {
+            playerY += playerSpeed
+        }
+        if (pressedKeys['a']) {
+            playerX -= playerSpeed
+        }
+
+        if (playerX < 0) {
+            playerX = 0
+        }
+
+        if (playerX > window.innerWidth - playerWidth) {
+            playerX = window.innerWidth - playerWidth
+        }
+
+        if (playerY < 0) {
+            playerY = 0
+        }
+
+        if (playerY > window.innerHeight - playerHeight) {
+            playerY = window.innerHeight - playerHeight
+        }
+
+        console.log((player.style.width));
+        
+
+        player.style.left = `${playerX}px`
+        player.style.top = `${playerY}px`
+
+        requestAnimationFrame(gameLoop)
+    }
+    requestAnimationFrame(gameLoop)
 }
-setInterval(fireClock, 16.99)
-
-

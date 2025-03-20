@@ -1,6 +1,21 @@
-#main-screen {
-    margin: 0 auto;
-    height: 640px;
-    width: 640px;
-    border: 2px solid black;
+body {
+    display: flex;
+    justify-content: center;
+    margin-top: 250px;
+    background-color: rgb(2, 0, 33);
+}
+
+#player {
+    background-color: red;
+    position: absolute;
+    width: 50px;
+    height: 50px;
+}
+
+#start {
+    background-color: lightblue;
+    border: 1px solid white;
+    border-radius: 512px;
+    padding: 0 15px;
+    font-size: 18px;
 }
