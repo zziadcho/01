@@ -1,15 +1,8 @@
 body {
     display: flex;
     justify-content: center;
-    margin-top: 250px;
+    align-self: center;
     background-color: rgb(2, 0, 33);
-}
-
-#player {
-    background-color: red;
-    position: absolute;
-    width: 50px;
-    height: 50px;
 }
 
 #start {
@@ -18,4 +11,22 @@ body {
     border-radius: 512px;
     padding: 0 15px;
     font-size: 18px;
+    position: absolute;
+    top: 30%;
+    left: 50%;
+}
+
+#player {
+    background-color: rgb(29, 141, 141);
+    position: absolute;
+    border-radius: 512px;
+    width: 50px;
+    height: 50px;
+}
+
+#enemy{
+    background-color: darkred;
+    position: absolute;
+    width: 50px;
+    height: 50px;
 }
