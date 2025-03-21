@@ -30,7 +30,8 @@ const startGame = () => {
     })
     setInterval(() => {
         if (enemies.length < maxSpawn) {
-            let enemyX, enemyY
+            let enemyX = Math.random() * (window.innerWidth - enemyWidth)
+            let enemyY = Math.random() * (window.innerHeight - enemyHeight)
             const enemy = Object.assign(document.createElement("div"), {
                 id: "enemy"
             })
@@ -69,10 +70,10 @@ const startGame = () => {
             enemy.element.style.left = `${enemy.x}px`
             enemy.element.style.top = `${enemy.y}px`
 
-            if (playerX < enemy.x + (enemyWidth / 2) &&
-                playerX + (playerWidth / 2) > enemy.x &&
-                playerY < enemy.y + (enemyHeight / 2) &&
-                playerY + (playerHeight / 2) > enemy.y) {
+            if (playerX < enemy.x + enemyWidth &&
+                playerX + playerWidth > enemy.x &&
+                playerY < enemy.y + enemyHeight &&
+                playerY + playerHeight > enemy.y) {
                 console.log("collided")
             }
         });
