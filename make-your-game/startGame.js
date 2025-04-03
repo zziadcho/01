@@ -149,16 +149,28 @@ const startGame = () => {
             //enemy/enemy collision check
             for (let i = 0; i < enemies.length; i++) {
                 if (i != enemyIndex) {
-                    const otherEnemy = enemies[i];
-                    if (enemy.x + enemyObj.Width >= otherEnemy.X
+                    const otherEnemy = enemies[i]
+                    if (enemy.x + enemyObj.Width >= otherEnemy.x
                         &&
-                        enemy.x <= otherEnemy.X + enemyObj.Width
+                        enemy.x <= otherEnemy.x + enemyObj.Width
                         &&
-                        enemy.y + enemyObj.Height >= otherEnemy.Y
+                        enemy.y + enemyObj.Height >= otherEnemy.y
                         &&
-                        enemy.y <= otherEnemy.Y + enemyObj.Height
+                        enemy.y <= otherEnemy.y + enemyObj.Height
                     ) {
-                        console.log('enemies collided');
+                        const repelX = enemy.x - otherEnemy.x
+                        const repelY = enemy.y - otherEnemy.y
+
+                        const repelDist = Math.sqrt(repelX * repelX + repelY * repelY) || 1
+                        const NRX = repelX / repelDist //NR = normalized repel
+                        const NRY = repelY / repelDist
+
+                        const repelStrength = 1.0
+                        enemy.x += NRX * repelStrength
+                        enemy.y += NRY * repelStrength
+
+                        otherEnemy.x -= NRX * repelStrength
+                        otherEnemy.y -= NRY * repelStrength
                     }
                 }
             }
@@ -180,13 +192,13 @@ const startGame = () => {
                 let kbFrames = 10
 
                 if (absX > absY) {
-                    kbX = (EPDX < 0 ? -1 : 1) * (kbDistance / kbFrames)
-                    kbY = 0
+                    playerObj.kbX = (EPDX < 0 ? -1 : 1) * (kbDistance / kbFrames)
+                    playerObj.kbY = 0
                 } else {
-                    kbX = 0
-                    kbY = (EPDY < 0 ? -1 : 1) * (kbDistance / kbFrames)
+                    playerObj.kbX = 0
+                    playerObj.kbY = (EPDY < 0 ? -1 : 1) * (kbDistance / kbFrames)
                 }
-                kbDuration = kbFrames
+                playerObj.kbDuration = kbFrames
             }
 
             //bullet/enemy collision check
