@@ -22,47 +22,19 @@ const bulletObj = {
 }
 
 //utilities
-const bullets = [], enemies = []
-const maxSpawn = 5, spawnInterval = 200
-const mouseObj = {
+const bullets = [], enemies = [],
+    maxSpawn = 5, spawnInterval = 200,
+    mouseObj = {
     X: 0,
     Y: 0
 }
 
 let invisDuration = 250,
-    isInvis = false, //Invis = invisibility
-    score = 0
+    newRound = false, isInvis = false, //Invis = invisibility
+    score = 0, inLobby = true
 
-const startGame = () => {
-    //initialize
-    const pressedKeys = {}
-    const startTime = performance.now();
-    const button = document.getElementById("start")
-    const runInfo = Object.assign(document.createElement("div"), {
-        id: "runInfo"
-    })
-    const playerElement = Object.assign(document.createElement("div"), {
-        id: "player",
-    })
-    button.style.display = "none"
-    document.body.append(playerElement, runInfo)
-
-    //event listeners
-    document.addEventListener("keydown", function (e) {
-        pressedKeys[e.key] = true
-    })
-    document.addEventListener("keyup", function (e) {
-        pressedKeys[e.key] = false
-    })
-    document.addEventListener("mousemove", function (e) {
-        mouseObj.X = e.clientX
-        mouseObj.Y = e.clientY
-    })
-    document.addEventListener("mousedown", function (e) {
-        shootBullet(playerObj.X, playerObj.Y, mouseObj.X, mouseObj.Y)
-    })
-
-    //enemy spawner
+//actions
+const spawnEnemies = () => {
     setInterval(() => {
         if (enemies.length < maxSpawn) {
             let enemyX = Math.random() * (window.innerWidth - enemyObj.Width),
@@ -79,42 +51,77 @@ const startGame = () => {
             })
         }
     }, spawnInterval)
+}
 
-    //actions
-    const damagePlayer = (damage) => {
-        if (isInvis) return
-        playerObj.HP -= damage
+const damagePlayer = (damage) => {
+    if (isInvis) return
+    playerObj.HP -= damage
 
-        isInvis = true
-        setTimeout(() => {
-            isInvis = false
-        }, invisDuration)
-    }
+    isInvis = true
+    setTimeout(() => {
+        isInvis = false
+    }, invisDuration)
+}
 
-    const shootBullet = (startX, startY, targetX, targetY) => {
-        const dx = targetX - (startX + playerObj.Width / 2)
-        const dy = targetY - (startY + playerObj.Height / 2)
-        const bulletElement = Object.assign(document.createElement("div"), {
-            id: "bullet"
-        })
+const shootBullet = (startX, startY, targetX, targetY) => {
+    const dx = targetX - (startX + playerObj.Width / 2)
+    const dy = targetY - (startY + playerObj.Height / 2)
+    const bulletElement = Object.assign(document.createElement("div"), {
+        id: "bullet"
+    })
 
-        const BPD = Math.sqrt(dx * dx + dy * dy) //BPD = bullet player
-        const dxNorm = dx / BPD
-        const dyNorm = dy / BPD
-        document.body.appendChild(bulletElement)
-        bullets.push({
-            element: bulletElement,
-            x: startX + playerObj.Width / 2,
-            y: startY + playerObj.Height / 2,
-            dx: dxNorm * bulletObj.Speed,
-            dy: dyNorm * bulletObj.Speed,
-            damage: bulletObj.Damage
-        })
-    }
+    const BPD = Math.sqrt(dx * dx + dy * dy) //BPD = bullet player
+    const dxNorm = dx / BPD
+    const dyNorm = dy / BPD
+    document.body.appendChild(bulletElement)
+    bullets.push({
+        element: bulletElement,
+        x: startX + playerObj.Width / 2,
+        y: startY + playerObj.Height / 2,
+        dx: dxNorm * bulletObj.Speed,
+        dy: dyNorm * bulletObj.Speed,
+        damage: bulletObj.Damage
+    })
+}
+
+const startGame = () => {
+    //initialize
+    document.getElementById("shop").style.visibility = "visible", document.getElementById("ready").style.visibility = "visible", document.getElementById("menu").style.display = "none"
+    
+    let startTime = 0
+    const pressedKeys = {}
+    const runInfo = Object.assign(document.createElement("div"), {
+        id: "runInfo"
+    })
+    const playerElement = Object.assign(document.createElement("div"), {
+        id: "player",
+    })
+    const shop = document.getElementById("shop"),
+        ready = document.getElementById("ready")
+
+    shop.innerText = "Shop"
+    ready.innerText = "Ready"
+
+    document.body.append(playerElement, runInfo, shop, ready)
+
+    //event listeners
+    document.addEventListener("keydown", function (e) {
+        pressedKeys[e.key] = true
+    })
+    document.addEventListener("keyup", function (e) {
+        pressedKeys[e.key] = false
+    })
+    document.addEventListener("mousemove", function (e) {
+        mouseObj.X = e.clientX
+        mouseObj.Y = e.clientY
+    })
+    document.addEventListener("mousedown", function (e) {
+        shootBullet(playerObj.X, playerObj.Y, mouseObj.X, mouseObj.Y)
+    })
 
     const gameLoop = () => {
-
-        //timer update
+        ////gameplay 
+        //player
         const currentTime = performance.now()
         const timePassed = currentTime - startTime
         //move player 
@@ -145,7 +152,25 @@ const startGame = () => {
             }
         }
 
+        //ready
+        if (
+            playerObj.X + playerObj.Width >= ready.getBoundingClientRect().left
+            &&
+            playerObj.X <= ready.getBoundingClientRect().left + ready.getBoundingClientRect().width
+            &&
+            playerObj.Y + playerObj.Height >= ready.getBoundingClientRect().top
+            &&
+            playerObj.Y <= ready.getBoundingClientRect().top + ready.getBoundingClientRect().height
+        ) {
+            startTime = performance.now()
+            document.getElementById("shop").style.display = "none", document.getElementById("ready").style.display = "none"
+            spawnEnemies()
+        }
+
         //enemies
+        if (newRound) {
+            maxSpawn = (maxSpawn + 5) * enemyObj.Buff
+        }
         enemies.forEach((enemy, enemyIndex) => {
 
             const EPDX = playerObj.X - enemy.x //EPD = enemyPlayerDistance
@@ -162,12 +187,13 @@ const startGame = () => {
             for (let i = 0; i < enemies.length; i++) {
                 if (i != enemyIndex) {
                     const otherEnemy = enemies[i]
-                    if (enemy.x + enemyObj.Width >= otherEnemy.x
-                        &&
+                    if (
+                        enemy.x + enemyObj.Width >= otherEnemy.x
+                    &&
                         enemy.x <= otherEnemy.x + enemyObj.Width
-                        &&
+                    &&
                         enemy.y + enemyObj.Height >= otherEnemy.y
-                        &&
+                    &&
                         enemy.y <= otherEnemy.y + enemyObj.Height
                     ) {
                         const repelX = enemy.x - otherEnemy.x
@@ -186,13 +212,15 @@ const startGame = () => {
                     }
                 }
             }
+
             //player/enemy collision check
-            if (playerObj.X + playerObj.Width >= enemy.x
-                &&
+            if (
+                playerObj.X + playerObj.Width >= enemy.x
+            &&
                 playerObj.X <= enemy.x + enemyObj.Width
-                &&
+            &&
                 playerObj.Y + playerObj.Height >= enemy.y
-                &&
+            &&
                 playerObj.Y <= enemy.y + enemyObj.Height
             ) {
                 damagePlayer(enemyObj.Damage)
@@ -215,10 +243,14 @@ const startGame = () => {
 
             //bullet/enemy collision check
             bullets.forEach((bullet, bulletIndex) => {
-                if (bullet.x + bulletObj.Width >= enemy.x
-                    && bullet.x <= enemy.x + enemyObj.Width
-                    && bullet.y + bulletObj.Height >= enemy.y
-                    && bullet.y <= enemy.y + enemyObj.Height
+                if (
+                    bullet.x + bulletObj.Width >= enemy.x
+                &&
+                    bullet.x <= enemy.x + enemyObj.Width
+                &&
+                    bullet.y + bulletObj.Height >= enemy.y
+                &&
+                    bullet.y <= enemy.y + enemyObj.Height
                 ) {
                     enemy.hp -= bulletObj.Damage
 
@@ -228,6 +260,8 @@ const startGame = () => {
                     }
 
                     if (enemy.hp <= 0 && enemy.element.parentNode) {
+                        shop.style.display = "visible", ready.style.display = "visible" 
+                        newRound = true
                         score += 100
                         document.body.removeChild(enemy.element)
                         enemies.splice(enemyIndex, 1)
@@ -240,6 +274,7 @@ const startGame = () => {
             enemy.element.style.top = `${enemy.y}px`
         })
 
+        //bullets
         bullets.forEach((bullet, index) => {
             bullet.x += bullet.dx
             bullet.y += bullet.dy
@@ -270,6 +305,9 @@ const startGame = () => {
         if (playerObj.HP === 0) {
             alert(`You survived ${runTime}`);
         }
+
+        ////interaction
+
 
         requestAnimationFrame(gameLoop)
     }

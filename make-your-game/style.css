@@ -6,19 +6,25 @@ body {
     background-color: rgb(2, 0, 33);
 }
 
-#start {
+#menu {
+    display: flex;
+    gap: 15px;
+    margin-top: 250px;
+}
+
+button {
     background-color: lightblue;
     border: 1px solid white;
     border-radius: 512px;
-    padding: 0 15px;
+    height: 50px;
+    width: 150px;
     font-size: 18px;
-    position: absolute;
-    top: 30%;
-    left: 50%;
+    font-weight: 600;
 }
 
 #runInfo {
     border: 1px solid white;
+    background-color: darkslategray;
     color: white;
     position: absolute;
     top: 10px;
@@ -30,14 +36,6 @@ body {
     padding: 15px;
     font-size: 18px;
     z-index: 9999;
-}
-
-#bullet {
-    position: absolute;
-    background-color: red;
-    width: 15px;
-    height: 15px;
-    z-index: -9999;
 }
 
 #player {
@@ -53,4 +51,37 @@ body {
     width: 75px;
     height: 75px;
     background-color: red;
+}
+
+#bullet {
+    position: absolute;
+    background-color: red;
+    width: 15px;
+    height: 15px;
+    border-radius: 512px;
+    z-index: -9999;
+}
+
+#shop, #ready {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    visibility: hidden;
+    position: absolute;
+    top: 50%;
+    width: 75px;
+    height: 75px;
+    font-size: 20px;
+    color: white;
+    z-index: -999;
+}
+
+#shop {
+    background-color: darkgoldenrod;
+    left: 150px;
+}
+
+#ready {
+    background-color: green;
+    right: 150px;
 }
