@@ -29,17 +29,23 @@ const mouseObj = {
     Y: 0
 }
 
-let invisDuration = 1500,
-    isInvis = false //Invis = invisibility
+let invisDuration = 250,
+    isInvis = false, //Invis = invisibility
+    score = 0
 
 const startGame = () => {
+    //initialize
     const pressedKeys = {}
+    const startTime = performance.now();
     const button = document.getElementById("start")
+    const runInfo = Object.assign(document.createElement("div"), {
+        id: "runInfo"
+    })
     const playerElement = Object.assign(document.createElement("div"), {
         id: "player",
     })
     button.style.display = "none"
-    document.body.appendChild(playerElement)
+    document.body.append(playerElement, runInfo)
 
     //event listeners
     document.addEventListener("keydown", function (e) {
@@ -55,6 +61,8 @@ const startGame = () => {
     document.addEventListener("mousedown", function (e) {
         shootBullet(playerObj.X, playerObj.Y, mouseObj.X, mouseObj.Y)
     })
+
+    //enemy spawner
     setInterval(() => {
         if (enemies.length < maxSpawn) {
             let enemyX = Math.random() * (window.innerWidth - enemyObj.Width),
@@ -71,6 +79,7 @@ const startGame = () => {
             })
         }
     }, spawnInterval)
+
     //actions
     const damagePlayer = (damage) => {
         if (isInvis) return
@@ -105,6 +114,9 @@ const startGame = () => {
 
     const gameLoop = () => {
 
+        //timer update
+        const currentTime = performance.now()
+        const timePassed = currentTime - startTime
         //move player 
         if (pressedKeys["w"]) playerObj.Y -= playerObj.Speed
         if (pressedKeys["a"]) playerObj.X -= playerObj.Speed
@@ -216,6 +228,7 @@ const startGame = () => {
                     }
 
                     if (enemy.hp <= 0 && enemy.element.parentNode) {
+                        score += 100
                         document.body.removeChild(enemy.element)
                         enemies.splice(enemyIndex, 1)
                     }
@@ -246,8 +259,16 @@ const startGame = () => {
         playerElement.style.top = `${playerObj.Y}px`
         playerElement.style.transform = `rotate(${aimAngle}deg)`
 
+        //run updates
+        let runTime = `${(timePassed / 1000).toFixed(0)}s`
+        runInfo.innerText = `
+            Time: ${runTime}
+            HP: ${playerObj.HP}
+            Score: ${score}
+        `
+
         if (playerObj.HP === 0) {
-            alert("gameOver")
+            alert(`You survived ${runTime}`);
         }
 
         requestAnimationFrame(gameLoop)
