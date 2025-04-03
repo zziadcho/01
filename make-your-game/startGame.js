@@ -6,12 +6,12 @@ let playerX = 0, playerY = 0,
 //enemy stat&info
 let enemyWidth = 75, enemyHeight = 75,
     enemyHP = 3, enemySpeed = 0.1
-enemyDamage = 1, enemyBuff = 1
+    enemyDamage = 1, enemyBuff = 1
 
 //bullet stat&info
 let bulletX = playerX + playerWidth / 2, bulletY = playerY + playerHeight / 2,
     bulletWidth = 15, bulletHeight = 15
-bulletDamage = 1, bulletSpeed = 10
+    bulletDamage = 1, bulletSpeed = 10
 
 //utilities
 const bullets = [], enemies = []
@@ -40,7 +40,7 @@ const startGame = () => {
         mouseX = e.clientX
         mouseY = e.clientY
     })  
-    document.addEventListener("click", function (e) {
+    document.addEventListener("mousedown", function (e) {
         shootBullet(playerX, playerY, mouseX, mouseY)
     })
     setInterval(() => {
@@ -167,22 +167,19 @@ const startGame = () => {
                     && bullet.y + bulletHeight >= enemy.y
                     && bullet.y <= enemy.y + enemyHeight
                 ) {
-                    // Reduce enemy HP
                     enemy.hp -= bullet.damage
-                    console.log(enemy.hp);
                     
+                    if (bullet.element.parentNode) {
+                        document.body.removeChild(bullet.element)
+                        bullets.splice(bulletIndex, 1)
+                    }
 
-                    // Remove bullet
-                    document.body.removeChild(bullet.element)
-                    bullets.splice(bulletIndex, 1)
-
-                    // Remove enemy if HP reaches 0
-                    if (enemy.hp <= 0) {
+                    if (enemy.hp <= 0 && enemy.element.parentNode) {
                         document.body.removeChild(enemy.element)
                         enemies.splice(enemyIndex, 1)
                     }
                 }
-            });
+            })
 
             //enemy updates
             enemy.element.style.left = `${enemy.x}px`
@@ -202,7 +199,7 @@ const startGame = () => {
 
             bullet.element.style.left = `${bullet.x}px`
             bullet.element.style.top = `${bullet.y}px`
-        });
+        })
         //player updates
         player.style.left = `${playerX}px`
         player.style.top = `${playerY}px`
