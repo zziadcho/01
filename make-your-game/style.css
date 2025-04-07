@@ -63,25 +63,21 @@ button {
 }
 
 #shop, #ready {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    visibility: hidden;
     position: absolute;
     top: 50%;
     width: 75px;
     height: 75px;
     font-size: 20px;
     color: white;
-    z-index: -999;
+    text-align: center;
 }
 
 #shop {
     background-color: darkgoldenrod;
-    left: 150px;
+    right: 150px;
 }
 
 #ready {
     background-color: green;
-    right: 150px;
+    left: 150px;
 }

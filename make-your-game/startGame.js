@@ -1,6 +1,6 @@
 //player stat&info
 const playerObj = {
-    X: 0, Y: 0,
+    X: 500, Y: 500,
     Width: 50, Height: 50,
     HP: 10, Speed: 10,
     kbX: 0, kbY: 0, kbDuration: 0
@@ -10,33 +10,37 @@ const playerObj = {
 const enemyObj = {
     // X: 0, Y: 0,
     Width: 75, Height: 75,
-    HP: 3, Speed: 2,
-    Damage: 1, Buff: 1
+    HP: 3, Speed: 0.5,
+    Damage: 1, Buff: 1.75
 }
 
 //bullet stat&info
 const bulletObj = {
     X: playerObj.X + playerObj.Width / 2, Y: playerObj.Y + playerObj.Height / 2,
     Width: 15, Height: 15,
-    Damage: 1, Speed: 10
+    Damage: 3, Speed: 40
 }
 
 //utilities
 const bullets = [], enemies = [],
-    maxSpawn = 5, spawnInterval = 200,
     mouseObj = {
-    X: 0,
-    Y: 0
-}
+        X: 0, Y: 0
+    }
 
 let invisDuration = 250,
-    newRound = false, isInvis = false, //Invis = invisibility
-    score = 0, inLobby = true
+    score = 0, isInvis = false, //Invis = invisibility
+    roundStat = {
+        roundCount: 0,
+        bossRound: false,
+        normalRound: false,
+        inLobby: true,
+        maxSpawn: 2
+    }
 
 //actions
 const spawnEnemies = () => {
-    setInterval(() => {
-        if (enemies.length < maxSpawn) {
+    for (let i = 0; i < roundStat.maxSpawn; i++) {
+        if (roundStat.normalRound) {
             let enemyX = Math.random() * (window.innerWidth - enemyObj.Width),
                 enemyY = Math.random() * (window.innerHeight - enemyObj.Height)
             const enemyElement = Object.assign(document.createElement("div"), {
@@ -50,7 +54,7 @@ const spawnEnemies = () => {
                 hp: enemyObj.HP
             })
         }
-    }, spawnInterval)
+    }
 }
 
 const damagePlayer = (damage) => {
@@ -85,23 +89,20 @@ const shootBullet = (startX, startY, targetX, targetY) => {
 }
 
 const startGame = () => {
-    //initialize
-    document.getElementById("shop").style.visibility = "visible", document.getElementById("ready").style.visibility = "visible", document.getElementById("menu").style.display = "none"
-    
+
     let startTime = 0
-    const pressedKeys = {}
-    const runInfo = Object.assign(document.createElement("div"), {
-        id: "runInfo"
-    })
-    const playerElement = Object.assign(document.createElement("div"), {
-        id: "player",
-    })
-    const shop = document.getElementById("shop"),
-        ready = document.getElementById("ready")
+    const pressedKeys = {},
+        runInfo = Object.assign(document.createElement("div"), {
+            id: "runInfo"
+        }),
+        playerElement = Object.assign(document.createElement("div"), {
+            id: "player",
+        }),
+        shop = document.getElementById("shop"),
+        ready = document.getElementById("ready"),
+        menu = document.getElementById("menu")
 
-    shop.innerText = "Shop"
-    ready.innerText = "Ready"
-
+    menu.remove()
     document.body.append(playerElement, runInfo, shop, ready)
 
     //event listeners
@@ -152,25 +153,33 @@ const startGame = () => {
             }
         }
 
+        const readyBounds = ready.getBoundingClientRect()
+
+
         //ready
         if (
-            playerObj.X + playerObj.Width >= ready.getBoundingClientRect().left
+            playerObj.X + playerObj.Width >= readyBounds.left
             &&
-            playerObj.X <= ready.getBoundingClientRect().left + ready.getBoundingClientRect().width
+            playerObj.X <= readyBounds.left + readyBounds.width
             &&
-            playerObj.Y + playerObj.Height >= ready.getBoundingClientRect().top
+            playerObj.Y + playerObj.Height >= readyBounds.top
             &&
-            playerObj.Y <= ready.getBoundingClientRect().top + ready.getBoundingClientRect().height
+            playerObj.Y <= readyBounds.top + readyBounds.height
+            &&
+            ready.parentNode
         ) {
+            ready.remove(), shop.remove()
             startTime = performance.now()
-            document.getElementById("shop").style.display = "none", document.getElementById("ready").style.display = "none"
+            roundStat.normalRound = true
+            roundStat.inLobby = false
+            roundStat.roundCount++
+            roundStat.maxSpawn *= enemyObj.Buff
             spawnEnemies()
         }
+        if (enemies.length === 0) roundStat.inLobby = true, roundStat.normalRound = false, roundStat.bossRound = false
 
+        if (roundStat.inLobby && !roundStat.bossRound && !roundStat.normalRound) document.body.append(ready, shop)
         //enemies
-        if (newRound) {
-            maxSpawn = (maxSpawn + 5) * enemyObj.Buff
-        }
         enemies.forEach((enemy, enemyIndex) => {
 
             const EPDX = playerObj.X - enemy.x //EPD = enemyPlayerDistance
@@ -189,11 +198,11 @@ const startGame = () => {
                     const otherEnemy = enemies[i]
                     if (
                         enemy.x + enemyObj.Width >= otherEnemy.x
-                    &&
+                        &&
                         enemy.x <= otherEnemy.x + enemyObj.Width
-                    &&
+                        &&
                         enemy.y + enemyObj.Height >= otherEnemy.y
-                    &&
+                        &&
                         enemy.y <= otherEnemy.y + enemyObj.Height
                     ) {
                         const repelX = enemy.x - otherEnemy.x
@@ -216,11 +225,11 @@ const startGame = () => {
             //player/enemy collision check
             if (
                 playerObj.X + playerObj.Width >= enemy.x
-            &&
+                &&
                 playerObj.X <= enemy.x + enemyObj.Width
-            &&
+                &&
                 playerObj.Y + playerObj.Height >= enemy.y
-            &&
+                &&
                 playerObj.Y <= enemy.y + enemyObj.Height
             ) {
                 damagePlayer(enemyObj.Damage)
@@ -245,11 +254,11 @@ const startGame = () => {
             bullets.forEach((bullet, bulletIndex) => {
                 if (
                     bullet.x + bulletObj.Width >= enemy.x
-                &&
+                    &&
                     bullet.x <= enemy.x + enemyObj.Width
-                &&
+                    &&
                     bullet.y + bulletObj.Height >= enemy.y
-                &&
+                    &&
                     bullet.y <= enemy.y + enemyObj.Height
                 ) {
                     enemy.hp -= bulletObj.Damage
@@ -260,8 +269,6 @@ const startGame = () => {
                     }
 
                     if (enemy.hp <= 0 && enemy.element.parentNode) {
-                        shop.style.display = "visible", ready.style.display = "visible" 
-                        newRound = true
                         score += 100
                         document.body.removeChild(enemy.element)
                         enemies.splice(enemyIndex, 1)
@@ -298,6 +305,7 @@ const startGame = () => {
         let runTime = `${(timePassed / 1000).toFixed(0)}s`
         runInfo.innerText = `
             Time: ${runTime}
+            Round: ${roundStat.roundCount}
             HP: ${playerObj.HP}
             Score: ${score}
         `
