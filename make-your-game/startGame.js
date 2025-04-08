@@ -1,7 +1,7 @@
 //player stat&info
 const playerObj = {
     X: 500, Y: 500,
-    Width: 50, Height: 50,
+    Width: 75, Height: 175,
     HP: 10, Speed: 10,
     kbX: 0, kbY: 0, kbDuration: 0
 }
@@ -9,7 +9,7 @@ const playerObj = {
 //enemy stat&info
 const enemyObj = {
     // X: 0, Y: 0,
-    Width: 75, Height: 75,
+    Width: 75, Height: 175,
     HP: 3, Speed: 0.5,
     Damage: 1, Buff: 1.75
 }
@@ -18,13 +18,15 @@ const enemyObj = {
 const bulletObj = {
     X: playerObj.X + playerObj.Width / 2, Y: playerObj.Y + playerObj.Height / 2,
     Width: 15, Height: 15,
-    Damage: 3, Speed: 40
+    Damage: 3, Speed: 40,
+    fireRate: 200, fireRateInterval: null
 }
 
 //utilities
 const bullets = [], enemies = [],
     mouseObj = {
-        X: 0, Y: 0
+        X: 0, Y: 0,
+        buttonHeld: false,
     }
 
 let invisDuration = 250,
@@ -43,8 +45,9 @@ const spawnEnemies = () => {
         if (roundStat.normalRound) {
             let enemyX = Math.random() * (window.innerWidth - enemyObj.Width),
                 enemyY = Math.random() * (window.innerHeight - enemyObj.Height)
-            const enemyElement = Object.assign(document.createElement("div"), {
-                id: "enemy"
+            const enemyElement = Object.assign(document.createElement("img"), {
+                id: "enemy",
+                src: "./assets/enemy.png    "
             })
             document.body.appendChild(enemyElement)
             enemies.push({
@@ -68,15 +71,15 @@ const damagePlayer = (damage) => {
 }
 
 const shootBullet = (startX, startY, targetX, targetY) => {
-    const dx = targetX - (startX + playerObj.Width / 2)
-    const dy = targetY - (startY + playerObj.Height / 2)
-    const bulletElement = Object.assign(document.createElement("div"), {
-        id: "bullet"
-    })
+    const dx = targetX - (startX + playerObj.Width / 2),
+        dy = targetY - (startY + playerObj.Height / 2),
+        bulletElement = Object.assign(document.createElement("div"), {
+            id: "bullet"
+        }),
 
-    const BPD = Math.sqrt(dx * dx + dy * dy) //BPD = bullet player
-    const dxNorm = dx / BPD
-    const dyNorm = dy / BPD
+        BPD = Math.sqrt(dx * dx + dy * dy), //BPD = bullet player
+        dxNorm = dx / BPD,
+        dyNorm = dy / BPD
     document.body.appendChild(bulletElement)
     bullets.push({
         element: bulletElement,
@@ -95,8 +98,9 @@ const startGame = () => {
         runInfo = Object.assign(document.createElement("div"), {
             id: "runInfo"
         }),
-        playerElement = Object.assign(document.createElement("div"), {
+        playerElement = Object.assign(document.createElement("img"), {
             id: "player",
+            src: "./assets/player.png"
         }),
         shop = document.getElementById("shop"),
         ready = document.getElementById("ready"),
@@ -105,7 +109,8 @@ const startGame = () => {
     menu.remove()
     document.body.append(playerElement, runInfo, shop, ready)
 
-    //event listeners
+    //__________________________________ event listeners __________________________________\\
+
     document.addEventListener("keydown", function (e) {
         pressedKeys[e.key] = true
     })
@@ -117,10 +122,29 @@ const startGame = () => {
         mouseObj.Y = e.clientY
     })
     document.addEventListener("mousedown", function (e) {
+        mouseObj.buttonHeld = true
+
         shootBullet(playerObj.X, playerObj.Y, mouseObj.X, mouseObj.Y)
+
+        bulletObj.fireRateInterval = setInterval(() => {
+            if (mouseObj.buttonHeld) shootBullet(playerObj.X, playerObj.Y, mouseObj.X, mouseObj.Y)
+        }, bulletObj.fireRate);
+    })
+    document.addEventListener("mouseup", function (e) {
+        mouseObj.buttonHeld = false
+        if (bulletObj.fireRateInterval) {
+            clearInterval(bulletObj.fireRateInterval)
+            bulletObj.fireRateInterval = null
+        }
+    })
+    document.addEventListener("dragstart", function (e) {
+        e.preventDefault()
     })
 
+    //_____________________________________________________________________________________\\
+
     const gameLoop = () => {
+        console.log(enemies.length);
         ////gameplay 
         //player
         const currentTime = performance.now()
@@ -136,7 +160,7 @@ const startGame = () => {
         if (playerObj.Y < 0) playerObj.Y = 0
         if (playerObj.X > window.innerWidth - playerObj.Width) playerObj.X = window.innerWidth - playerObj.Width
         if (playerObj.Y > window.innerHeight - playerObj.Height) playerObj.Y = window.innerHeight - playerObj.Height
-
+        
         //player aim angle
         const MPDX = mouseObj.X - (playerObj.X + playerObj.Width / 2) //MPD = mousePlayerDistance
         const MPDY = mouseObj.Y - (playerObj.Y + playerObj.Height / 2)
@@ -299,7 +323,7 @@ const startGame = () => {
         //player updates
         playerElement.style.left = `${playerObj.X}px`
         playerElement.style.top = `${playerObj.Y}px`
-        playerElement.style.transform = `rotate(${aimAngle}deg)`
+        // playerElement.style.transform = `rotate(${aimAngle}deg)`
 
         //run updates
         let runTime = `${(timePassed / 1000).toFixed(0)}s`
@@ -313,9 +337,6 @@ const startGame = () => {
         if (playerObj.HP === 0) {
             alert(`You survived ${runTime}`);
         }
-
-        ////interaction
-
 
         requestAnimationFrame(gameLoop)
     }
