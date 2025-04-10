@@ -45,6 +45,41 @@ button {
     z-index: 9999;
 }
 
+#mask { 
+    display: none;
+    position: absolute;
+    top: 250px;
+}
+
+#shopMenu {
+    background-color: gray;
+    padding: 15px;
+    border-radius: 30px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    grid-column-gap: 0px;
+    grid-row-gap: 0px;        
+}
+
+#item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+#item img {
+    width: 75px;
+    height: 75px;
+    margin: 10px 5px;
+}
+
+#item button {
+    width: 45px;
+    height: 30px;
+}
+
 #player {
     position: absolute;
     transform-origin: center;
@@ -74,13 +109,19 @@ button {
 }
 
 #shop, #ready {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     position: absolute;
     top: 50%;
     width: 75px;
     height: 75px;
     font-size: 20px;
     color: white;
+    border: 1px dashed white;
+    border-radius: 30px;
     text-align: center;
+    z-index: -9999;
 }
 
 #shop {

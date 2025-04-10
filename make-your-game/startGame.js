@@ -1,8 +1,8 @@
 //player stat&info
 const playerObj = {
-    X: 500, Y: 500,
+    X: 700, Y: 400,
     Width: 75, Height: 175,
-    HP: 10, Speed: 10,
+    HP: 10, Speed: 10, Money: 0, Weapon: null,
     kbX: 0, kbY: 0, kbDuration: 0
 }
 
@@ -19,7 +19,7 @@ const bulletObj = {
     X: playerObj.X + playerObj.Width / 2, Y: playerObj.Y + playerObj.Height / 2,
     Width: 15, Height: 15,
     Damage: 3, Speed: 40,
-    fireRate: 200, fireRateInterval: null
+    fireRate: 10, fireRateInterval: null
 }
 
 //utilities
@@ -40,9 +40,20 @@ let invisDuration = 250,
 
 //actions
 const spawnEnemies = () => {
+    const DTS = 700 // DTS = distance to spawn
     if (roundStat.roundCount % 3 === 0) {
-        let enemyX = Math.random() * (window.innerWidth - enemyObj.Width),
-            enemyY = Math.random() * (window.innerHeight - enemyObj.Height)
+        let validPos = false,
+            enemyX, enemyY
+        while (!validPos) {
+            enemyX = Math.random() * (window.innerWidth - enemyObj.Width),
+                enemyY = Math.random() * (window.innerHeight - enemyObj.Height)
+
+            const dx = enemyX - playerObj.X,
+                dy = enemyY - playerObj.Y,
+                distance = Math.sqrt(dx * dx + dy * dy)
+
+            if (distance >= DTS) validPos = true
+        }
         const enemyElement = Object.assign(document.createElement("img"), {
             id: "boss",
             src: "./assets/boss.png"
@@ -58,8 +69,19 @@ const spawnEnemies = () => {
     }
     for (let i = 0; i < roundStat.maxSpawn; i++) {
         if (roundStat.normalRound) {
-            let enemyX = Math.random() * (window.innerWidth - enemyObj.Width),
-                enemyY = Math.random() * (window.innerHeight - enemyObj.Height)
+            let validPos = false,
+                enemyX, enemyY
+            while (!validPos) {
+                enemyX = Math.random() * (window.innerWidth - enemyObj.Width),
+                    enemyY = Math.random() * (window.innerHeight - enemyObj.Height)
+
+                const dx = enemyX - playerObj.X,
+                    dy = enemyY - playerObj.Y,
+                    distance = Math.sqrt(dx * dx + dy * dy)
+
+                if (distance >= DTS) validPos = true
+            }
+
             const enemyElement = Object.assign(document.createElement("img"), {
                 id: "enemy",
                 src: "./assets/enemy.png"
@@ -86,14 +108,14 @@ const damagePlayer = (damage) => {
     }, invisDuration)
 }
 
-const shootBullet = (startX, startY, targetX, targetY) => {
+const attack = (startX, startY, targetX, targetY) => {
     const dx = targetX - (startX + playerObj.Width / 2),
         dy = targetY - (startY + playerObj.Height / 2),
         bulletElement = Object.assign(document.createElement("div"), {
             id: "bullet"
         }),
 
-        BPD = Math.sqrt(dx * dx + dy * dy), //BPD = bullet player
+        BPD = Math.sqrt(dx * dx + dy * dy), //BPD = bullet player distance
         dxNorm = dx / BPD,
         dyNorm = dy / BPD
     document.body.appendChild(bulletElement)
@@ -111,8 +133,7 @@ const help = () => {
     alert(`- Move with WASD or Arrow keys
 - Hold or Click the left mouse button to shoot bullets
 - Move the player to the ready square to start the round
-- Survive!
-        `)
+- Survive!`)
 }
 
 const startGame = () => {
@@ -126,12 +147,18 @@ const startGame = () => {
             id: "player",
             src: "./assets/player.png"
         }),
-        // shop = document.getElementById("shop"),
-        ready = document.getElementById("ready"),
+        shop = Object.assign(document.createElement("div"), {
+            id: "shop",
+            textContent: "Shop"
+        }),
+        ready = Object.assign(document.createElement("div"), {
+            id: "ready",
+            textContent: "Ready"
+        }),
         menu = document.getElementById("menu")
 
     menu.remove()
-    document.body.append(playerElement, runInfo, ready)
+    document.body.append(playerElement, runInfo, ready, shop)
 
     //event listeners
 
@@ -148,10 +175,10 @@ const startGame = () => {
     document.addEventListener("mousedown", function (e) {
         mouseObj.buttonHeld = true
 
-        shootBullet(playerObj.X, playerObj.Y, mouseObj.X, mouseObj.Y)
+        attack(playerObj.X, playerObj.Y, mouseObj.X, mouseObj.Y)
 
         bulletObj.fireRateInterval = setInterval(() => {
-            if (mouseObj.buttonHeld) shootBullet(playerObj.X, playerObj.Y, mouseObj.X, mouseObj.Y)
+            if (mouseObj.buttonHeld) attack(playerObj.X, playerObj.Y, mouseObj.X, mouseObj.Y)
         }, bulletObj.fireRate);
     })
     document.addEventListener("mouseup", function (e) {
@@ -168,8 +195,8 @@ const startGame = () => {
     const gameLoop = () => {
         ////gameplay 
         //player
-        const currentTime = performance.now()
-        const timePassed = currentTime - startTime
+        const currentTime = performance.now(),
+            timePassed = currentTime - startTime
         //move player 
         if (pressedKeys["w"] || pressedKeys["ArrowUp"]) playerObj.Y -= playerObj.Speed
         if (pressedKeys["a"] || pressedKeys["ArrowLeft"]) playerObj.X -= playerObj.Speed
@@ -183,9 +210,9 @@ const startGame = () => {
         if (playerObj.Y > window.innerHeight - playerObj.Height) playerObj.Y = window.innerHeight - playerObj.Height
 
         //player aim angle
-        const MPDX = mouseObj.X - (playerObj.X + playerObj.Width / 2) //MPD = mousePlayerDistance
-        const MPDY = mouseObj.Y - (playerObj.Y + playerObj.Height / 2)
-        const aimAngle = Math.atan2(MPDY, MPDX) * (180 / Math.PI)
+        // const MPDX = mouseObj.X - (playerObj.X + playerObj.Width / 2), //MPD = mousePlayerDistance
+        // MPDY = mouseObj.Y - (playerObj.Y + playerObj.Height / 2),
+        // aimAngle = Math.atan2(MPDY, MPDX) * (180 / Math.PI)
 
         //knockback player
         if (playerObj.kbDuration > 0) {
@@ -198,22 +225,19 @@ const startGame = () => {
             }
         }
 
-        const readyBounds = ready.getBoundingClientRect()
+        const readyBounds = ready.getBoundingClientRect(),
+            shopBounds = shop.getBoundingClientRect()
 
         //ready
         if (
-            playerObj.X + playerObj.Width >= readyBounds.left
-            &&
-            playerObj.X <= readyBounds.left + readyBounds.width
-            &&
-            playerObj.Y + playerObj.Height >= readyBounds.top
-            &&
-            playerObj.Y <= readyBounds.top + readyBounds.height
-            &&
+            playerObj.X + playerObj.Width >= readyBounds.left &&
+            playerObj.X <= readyBounds.left + readyBounds.width &&
+            playerObj.Y + playerObj.Height >= readyBounds.top &&
+            playerObj.Y <= readyBounds.top + readyBounds.height &&
             ready.parentNode
         ) {
-            ready.remove(), 
-            // shop.remove()
+            ready.remove(),
+                shop.remove()
             startTime = performance.now()
             roundStat.normalRound = true
             roundStat.inLobby = false
@@ -221,8 +245,20 @@ const startGame = () => {
             roundStat.maxSpawn *= enemyObj.Buff
             spawnEnemies()
         }
+
+        if (
+            playerObj.X + playerObj.Width >= shopBounds.left &&
+            playerObj.X <= shopBounds.left + shopBounds.width &&
+            playerObj.Y + playerObj.Height >= shopBounds.top &&
+            playerObj.Y <= shopBounds.top + shopBounds.height &&
+            shop.parentNode
+        ) {
+            document.getElementById("mask").style.display = "unset"
+        } else {
+            document.getElementById("mask").style.display = "none"
+        }
         if (enemies.length === 0) roundStat.inLobby = true, roundStat.normalRound = false, roundStat.bossRound = false
-        if (roundStat.inLobby && !roundStat.normalRound) document.body.append(ready)
+        if (roundStat.inLobby) document.body.append(ready, shop)
 
         //enemies
         enemies.forEach((enemy, enemyIndex) => {
@@ -242,12 +278,9 @@ const startGame = () => {
                 if (i != enemyIndex) {
                     const otherEnemy = enemies[i]
                     if (
-                        enemy.x + enemyObj.Width >= otherEnemy.x
-                        &&
-                        enemy.x <= otherEnemy.x + enemyObj.Width
-                        &&
-                        enemy.y + enemyObj.Height >= otherEnemy.y
-                        &&
+                        enemy.x + enemyObj.Width >= otherEnemy.x &&
+                        enemy.x <= otherEnemy.x + enemyObj.Width &&
+                        enemy.y + enemyObj.Height >= otherEnemy.y &&
                         enemy.y <= otherEnemy.y + enemyObj.Height
                     ) {
                         const repelX = enemy.x - otherEnemy.x,
@@ -268,21 +301,18 @@ const startGame = () => {
 
             //player/enemy collision check
             if (
-                playerObj.X + playerObj.Width >= enemy.x
-                &&
-                playerObj.X <= enemy.x + enemyObj.Width
-                &&
-                playerObj.Y + playerObj.Height >= enemy.y
-                &&
+                playerObj.X + playerObj.Width >= enemy.x &&
+                playerObj.X <= enemy.x + enemyObj.Width &&
+                playerObj.Y + playerObj.Height >= enemy.y &&
                 playerObj.Y <= enemy.y + enemyObj.Height
             ) {
                 damagePlayer(enemyObj.Damage)
 
-                const absX = Math.abs(EPDX)
-                const absY = Math.abs(EPDY)
+                const absX = Math.abs(EPDX),
+                    absY = Math.abs(EPDY)
 
-                let kbDistance = 150
-                let kbFrames = 10
+                let kbDistance = 150,
+                    kbFrames = 10
 
                 if (absX > absY) {
                     playerObj.kbX = (EPDX < 0 ? -1 : 1) * (kbDistance / kbFrames)
@@ -297,12 +327,9 @@ const startGame = () => {
             //bullet/enemy collision check
             bullets.forEach((bullet, bulletIndex) => {
                 if (
-                    bullet.x + bulletObj.Width >= enemy.x
-                    &&
-                    bullet.x <= enemy.x + enemyObj.Width
-                    &&
-                    bullet.y + bulletObj.Height >= enemy.y
-                    &&
+                    bullet.x + bulletObj.Width >= enemy.x &&
+                    bullet.x <= enemy.x + enemyObj.Width &&
+                    bullet.y + bulletObj.Height >= enemy.y &&
                     bullet.y <= enemy.y + enemyObj.Height
                 ) {
                     enemy.hp -= bulletObj.Damage
@@ -314,6 +341,7 @@ const startGame = () => {
 
                     if (enemy.hp <= 0 && enemy.element.parentNode) {
                         score += 100
+                        playerObj.Money += (enemy.type === "boss") ? 250 : (enemy.type === "troop") ? 25 : 0;
                         document.body.removeChild(enemy.element)
                         enemies.splice(enemyIndex, 1)
                     }
@@ -351,6 +379,7 @@ const startGame = () => {
             Time: ${runTime}
             Round: ${roundStat.roundCount}
             HP: ${playerObj.HP}
+            Money: ${playerObj.Money}
             Score: ${score}
         `
 
