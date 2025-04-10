@@ -52,6 +52,12 @@ button {
     height: 175px;
 }
 
+#boss {
+    position: absolute;
+    width: 120px;
+    height: 205px;
+}
+
 #enemy {
     position: absolute;
     width: 75px;

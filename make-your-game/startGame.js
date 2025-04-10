@@ -10,7 +10,7 @@ const playerObj = {
 const enemyObj = {
     // X: 0, Y: 0,
     Width: 75, Height: 175,
-    HP: 3, Speed: 0.5,
+    bossHP: 10, HP: 3, Speed: 0.5,
     Damage: 1, Buff: 1.75
 }
 
@@ -33,7 +33,6 @@ let invisDuration = 250,
     score = 0, isInvis = false, //Invis = invisibility
     roundStat = {
         roundCount: 0,
-        bossRound: false,
         normalRound: false,
         inLobby: true,
         maxSpawn: 2
@@ -41,19 +40,36 @@ let invisDuration = 250,
 
 //actions
 const spawnEnemies = () => {
+    if (roundStat.roundCount % 3 === 0) {
+        let enemyX = Math.random() * (window.innerWidth - enemyObj.Width),
+            enemyY = Math.random() * (window.innerHeight - enemyObj.Height)
+        const enemyElement = Object.assign(document.createElement("img"), {
+            id: "boss",
+            src: "./assets/boss.png"
+        })
+        document.body.appendChild(enemyElement)
+        enemies.push({
+            element: enemyElement,
+            x: enemyX,
+            y: enemyY,
+            type: "boss",
+            hp: enemyObj.bossHP
+        })
+    }
     for (let i = 0; i < roundStat.maxSpawn; i++) {
         if (roundStat.normalRound) {
             let enemyX = Math.random() * (window.innerWidth - enemyObj.Width),
                 enemyY = Math.random() * (window.innerHeight - enemyObj.Height)
             const enemyElement = Object.assign(document.createElement("img"), {
                 id: "enemy",
-                src: "./assets/enemy.png    "
+                src: "./assets/enemy.png"
             })
             document.body.appendChild(enemyElement)
             enemies.push({
                 element: enemyElement,
                 x: enemyX,
                 y: enemyY,
+                type: "troop",
                 hp: enemyObj.HP
             })
         }
@@ -91,6 +107,14 @@ const shootBullet = (startX, startY, targetX, targetY) => {
     })
 }
 
+const help = () => {
+    alert(`- Move with WASD or Arrow keys
+- Hold or Click the left mouse button to shoot bullets
+- Move the player to the ready square to start the round
+- Survive!
+        `)
+}
+
 const startGame = () => {
 
     let startTime = 0
@@ -102,14 +126,14 @@ const startGame = () => {
             id: "player",
             src: "./assets/player.png"
         }),
-        shop = document.getElementById("shop"),
+        // shop = document.getElementById("shop"),
         ready = document.getElementById("ready"),
         menu = document.getElementById("menu")
 
     menu.remove()
-    document.body.append(playerElement, runInfo, shop, ready)
+    document.body.append(playerElement, runInfo, ready)
 
-    //__________________________________ event listeners __________________________________\\
+    //event listeners
 
     document.addEventListener("keydown", function (e) {
         pressedKeys[e.key] = true
@@ -141,26 +165,23 @@ const startGame = () => {
         e.preventDefault()
     })
 
-    //_____________________________________________________________________________________\\
-
     const gameLoop = () => {
-        console.log(enemies.length);
         ////gameplay 
         //player
         const currentTime = performance.now()
         const timePassed = currentTime - startTime
         //move player 
-        if (pressedKeys["w"]) playerObj.Y -= playerObj.Speed
-        if (pressedKeys["a"]) playerObj.X -= playerObj.Speed
-        if (pressedKeys["s"]) playerObj.Y += playerObj.Speed
-        if (pressedKeys["d"]) playerObj.X += playerObj.Speed
+        if (pressedKeys["w"] || pressedKeys["ArrowUp"]) playerObj.Y -= playerObj.Speed
+        if (pressedKeys["a"] || pressedKeys["ArrowLeft"]) playerObj.X -= playerObj.Speed
+        if (pressedKeys["s"] || pressedKeys["ArrowDown"]) playerObj.Y += playerObj.Speed
+        if (pressedKeys["d"] || pressedKeys["ArrowRight"]) playerObj.X += playerObj.Speed
 
         //stop player from going out of bound
         if (playerObj.X < 0) playerObj.X = 0
         if (playerObj.Y < 0) playerObj.Y = 0
         if (playerObj.X > window.innerWidth - playerObj.Width) playerObj.X = window.innerWidth - playerObj.Width
         if (playerObj.Y > window.innerHeight - playerObj.Height) playerObj.Y = window.innerHeight - playerObj.Height
-        
+
         //player aim angle
         const MPDX = mouseObj.X - (playerObj.X + playerObj.Width / 2) //MPD = mousePlayerDistance
         const MPDY = mouseObj.Y - (playerObj.Y + playerObj.Height / 2)
@@ -179,7 +200,6 @@ const startGame = () => {
 
         const readyBounds = ready.getBoundingClientRect()
 
-
         //ready
         if (
             playerObj.X + playerObj.Width >= readyBounds.left
@@ -192,7 +212,8 @@ const startGame = () => {
             &&
             ready.parentNode
         ) {
-            ready.remove(), shop.remove()
+            ready.remove(), 
+            // shop.remove()
             startTime = performance.now()
             roundStat.normalRound = true
             roundStat.inLobby = false
@@ -201,15 +222,15 @@ const startGame = () => {
             spawnEnemies()
         }
         if (enemies.length === 0) roundStat.inLobby = true, roundStat.normalRound = false, roundStat.bossRound = false
+        if (roundStat.inLobby && !roundStat.normalRound) document.body.append(ready)
 
-        if (roundStat.inLobby && !roundStat.bossRound && !roundStat.normalRound) document.body.append(ready, shop)
         //enemies
         enemies.forEach((enemy, enemyIndex) => {
 
-            const EPDX = playerObj.X - enemy.x //EPD = enemyPlayerDistance
-            const EPDY = playerObj.Y - enemy.y
+            const EPDX = playerObj.X - enemy.x, //EPD = enemyPlayerDistance
+                EPDY = playerObj.Y - enemy.y,
 
-            const EPD = Math.sqrt(EPDX * EPDX + EPDY * EPDY)
+                EPD = Math.sqrt(EPDX * EPDX + EPDY * EPDY)
 
             if (EPD > 0) {
                 enemy.x += (EPDX / EPD) * enemyObj.Speed
@@ -229,14 +250,13 @@ const startGame = () => {
                         &&
                         enemy.y <= otherEnemy.y + enemyObj.Height
                     ) {
-                        const repelX = enemy.x - otherEnemy.x
-                        const repelY = enemy.y - otherEnemy.y
+                        const repelX = enemy.x - otherEnemy.x,
+                            repelY = enemy.y - otherEnemy.y,
+                            repelDist = Math.sqrt(repelX * repelX + repelY * repelY) || 1,
+                            NRX = repelX / repelDist, //NR = normalized repel
+                            NRY = repelY / repelDist,
+                            repelStrength = 1.0
 
-                        const repelDist = Math.sqrt(repelX * repelX + repelY * repelY) || 1
-                        const NRX = repelX / repelDist //NR = normalized repel
-                        const NRY = repelY / repelDist
-
-                        const repelStrength = 1.0
                         enemy.x += NRX * repelStrength
                         enemy.y += NRY * repelStrength
 
