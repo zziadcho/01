@@ -67,17 +67,9 @@ button {
     justify-content: center;
     align-items: center;
     flex-direction: column;
-}
-
-#item img {
     width: 75px;
     height: 75px;
     margin: 10px 5px;
-}
-
-#item button {
-    width: 45px;
-    height: 30px;
 }
 
 #player {

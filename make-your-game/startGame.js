@@ -2,15 +2,16 @@
 const playerObj = {
     X: 700, Y: 400,
     Width: 75, Height: 175,
-    HP: 10, Speed: 10, Money: 0, Weapon: null,
-    kbX: 0, kbY: 0, kbDuration: 0
+    HP: 10, Speed: 10, Money: 0,
+    kbX: 0, kbY: 0, kbDuration: 0,
+    Weapon: null, Weapons: []
 }
 
 //enemy stat&info
 const enemyObj = {
     // X: 0, Y: 0,
     Width: 75, Height: 175,
-    bossHP: 10, HP: 3, Speed: 0.5,
+    bossHP: 10, HP: 3, Speed: 10,
     Damage: 1, Buff: 1.75
 }
 
@@ -19,18 +20,25 @@ const bulletObj = {
     X: playerObj.X + playerObj.Width / 2, Y: playerObj.Y + playerObj.Height / 2,
     Width: 15, Height: 15,
     Damage: 3, Speed: 40,
-    fireRate: 10, fireRateInterval: null
+    fireRate: 5, fireRateInterval: null
 }
 
 //utilities
-const bullets = [], enemies = [],
+const shopItems = {
+    "SawedOff": { name: "SawedOff", damage: 5, price: 150, firerate: 250 },
+    "Bayonet": { name: "Bayonet", damage: 5, price: 150, firerate: 250 },
+    "FN45": { name: "FN45", damage: 5, price: 150, firerate: 250 },
+    "MP5K": { name: "MP5K", damage: 5, price: 150, firerate: 250 },
+    "AKM": { name: "AKM", damage: 5, price: 150, firerate: 250 },
+    "M4": { name: "M4", damage: 5, price: 150, firerate: 250 }
+},
+    bullets = [], enemies = [],
     mouseObj = {
         X: 0, Y: 0,
         buttonHeld: false,
     }
-
-let invisDuration = 250,
-    score = 0, isInvis = false, //Invis = invisibility
+let invisDuration = 250, isShopGenerated = false
+score = 0, isInvis = false, //Invis = invisibility
     roundStat = {
         roundCount: 0,
         normalRound: false,
@@ -39,8 +47,26 @@ let invisDuration = 250,
     }
 
 //actions
+const buy = function () {
+    const boughtItem = this.src.split("/").pop().split(".")[0]
+    playerObj.Weapons.push(boughtItem)
+    console.log(playerObj.Weapons)
+}
+const generateShop = () => {
+    for (let i = 0; i < Object.keys(shopItems).length; i++) {
+        const shopMenu = document.getElementById("shopMenu"),
+            shopItem = Object.assign(document.createElement("img"), {
+                id: "item",
+                src: `assets/${Object.values(shopItems)[i].name}.png`,
+            })
+        shopItem.onclick = buy
+        shopMenu.appendChild(shopItem)
+    }
+    // Object.values(weapons)[i].name
+}
+
 const spawnEnemies = () => {
-    const DTS = 700 // DTS = distance to spawn
+    const DTS = 500 // DTS = distance to spawn
     if (roundStat.roundCount % 3 === 0) {
         let validPos = false,
             enemyX, enemyY
@@ -253,6 +279,7 @@ const startGame = () => {
             playerObj.Y <= shopBounds.top + shopBounds.height &&
             shop.parentNode
         ) {
+            if (!isShopGenerated) generateShop(), isShopGenerated = true
             document.getElementById("mask").style.display = "unset"
         } else {
             document.getElementById("mask").style.display = "none"
@@ -368,6 +395,7 @@ const startGame = () => {
             bullet.element.style.left = `${bullet.x}px`
             bullet.element.style.top = `${bullet.y}px`
         })
+
         //player updates
         playerElement.style.left = `${playerObj.X}px`
         playerElement.style.top = `${playerObj.Y}px`
@@ -384,7 +412,7 @@ const startGame = () => {
         `
 
         if (playerObj.HP === 0) {
-            alert(`You survived ${runTime}`);
+            alert("safi baraka 3lik")
         }
 
         requestAnimationFrame(gameLoop)
