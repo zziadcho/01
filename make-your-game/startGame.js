@@ -20,7 +20,7 @@ const bulletObj = {
     X: playerObj.X + playerObj.Width / 2, Y: playerObj.Y + playerObj.Height / 2,
     Width: 15, Height: 15,
     Damage: 3, Speed: 40,
-    fireRate: 5, fireRateInterval: null
+    fireRate: 100, fireRateInterval: null
 }
 
 //utilities
@@ -47,22 +47,35 @@ score = 0, isInvis = false, //Invis = invisibility
     }
 
 //actions
-const buy = function () {
-    const boughtItem = this.src.split("/").pop().split(".")[0]
-    playerObj.Weapons.push(boughtItem)
-    console.log(playerObj.Weapons)
+const buy = (itemName, itemImage) => {
+    playerObj.Weapons.push(itemName)
+    const buyButton = event.currentTarget,
+        inventory = document.getElementById("inventory")
+    buyButton.disabled = true
+    buyButton.innerText = "Sold!"
+    inventory.append(itemImage)
+    inventory.style.visibility = "visible"
+    
 }
 const generateShop = () => {
+    const shopMenu = document.getElementById("shopMenu")
     for (let i = 0; i < Object.keys(shopItems).length; i++) {
-        const shopMenu = document.getElementById("shopMenu"),
-            shopItem = Object.assign(document.createElement("img"), {
-                id: "item",
+        const itemName = Object.values(shopItems)[i].name,
+            itemContainer = Object.assign(document.createElement("div"), {
+                id: "itemContainer"
+            }),
+            itemImage = Object.assign(document.createElement("img"), {
+                id: "itemImage",
                 src: `assets/${Object.values(shopItems)[i].name}.png`,
+            }),
+            buyButton = Object.assign(document.createElement("button"), {
+                id: "buyButton"
             })
-        shopItem.onclick = buy
-        shopMenu.appendChild(shopItem)
+        buyButton.onclick = function () { buy(itemName, itemImage) }
+        buyButton.innerText = "Buy"
+        itemContainer.append(itemImage, buyButton)
+        shopMenu.appendChild(itemContainer)
     }
-    // Object.values(weapons)[i].name
 }
 
 const spawnEnemies = () => {
@@ -187,7 +200,6 @@ const startGame = () => {
     document.body.append(playerElement, runInfo, ready, shop)
 
     //event listeners
-
     document.addEventListener("keydown", function (e) {
         pressedKeys[e.key] = true
     })
