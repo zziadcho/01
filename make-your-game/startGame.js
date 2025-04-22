@@ -4,7 +4,7 @@ const playerObj = {
     Width: 75, Height: 175,
     HP: 10, Speed: 10, Money: 0,
     kbX: 0, kbY: 0, kbDuration: 0,
-    Weapon: null, Weapons: []
+    Weapon: "C96", Weapons: ["C96"]
 }
 
 //enemy stat&info
@@ -25,12 +25,13 @@ const bulletObj = {
 
 //utilities
 const shopItems = {
-    "SawedOff": { name: "SawedOff", damage: 5, price: 150, firerate: 250 },
-    "Bayonet": { name: "Bayonet", damage: 5, price: 150, firerate: 250 },
-    "FN45": { name: "FN45", damage: 5, price: 150, firerate: 250 },
-    "MP5K": { name: "MP5K", damage: 5, price: 150, firerate: 250 },
-    "AKM": { name: "AKM", damage: 5, price: 150, firerate: 250 },
-    "M4": { name: "M4", damage: 5, price: 150, firerate: 250 }
+    "SawedOff": { name: "SawedOff", damage: 3, speed: 45, firerate: 400, price: 150 },
+    "Bayonet": { name: "Bayonet", damage: 10, speed: 10, firerate: 100, price: 150 },
+    "FN45": { name: "FN45", damage: 2, speed: 30, firerate: 390, price: 150 },
+    "MP5K": { name: "MP5K", damage: 1, speed: 55, firerate: 150, price: 150 },
+    "AKM": { name: "AKM", damage: 5, speed: 70, firerate: 230, price: 150 },
+    "C96": { name: "C96", damage: 2, speed: 25, firerate: 390, price: 150 },
+    "M4": { name: "M4", damage: 4, speed: 60, firerate: 210, price: 150 }
 },
     bullets = [], enemies = [],
     mouseObj = {
@@ -55,7 +56,7 @@ const buy = (itemName, itemImage) => {
     buyButton.innerText = "Sold!"
     inventory.append(itemImage)
     inventory.style.visibility = "visible"
-    
+
 }
 const generateShop = () => {
     const shopMenu = document.getElementById("shopMenu")
@@ -147,7 +148,7 @@ const damagePlayer = (damage) => {
     }, invisDuration)
 }
 
-const attack = (startX, startY, targetX, targetY) => {
+const attack = (currentWeapon, startX, startY, targetX, targetY) => {
     const dx = targetX - (startX + playerObj.Width / 2),
         dy = targetY - (startY + playerObj.Height / 2),
         bulletElement = Object.assign(document.createElement("div"), {
@@ -157,15 +158,27 @@ const attack = (startX, startY, targetX, targetY) => {
         BPD = Math.sqrt(dx * dx + dy * dy), //BPD = bullet player distance
         dxNorm = dx / BPD,
         dyNorm = dy / BPD
-    document.body.appendChild(bulletElement)
-    bullets.push({
-        element: bulletElement,
-        x: startX + playerObj.Width / 2,
-        y: startY + playerObj.Height / 2,
-        dx: dxNorm * bulletObj.Speed,
-        dy: dyNorm * bulletObj.Speed,
-        damage: bulletObj.Damage
-    })
+    if (currentWeapon == "SawedOff") {
+        document.body.appendChild(bulletElement)
+        bullets.push({
+            element: bulletElement,
+            x: startX + playerObj.Width / 2,
+            y: startY + playerObj.Height / 2,
+            dx: dxNorm * shopItems.SawedOff.speed,
+            dy: dyNorm * shopItems.SawedOff.speed,
+            damage: shopItems.SawedOff.damage
+        })
+    } else {
+        document.body.appendChild(bulletElement)
+        bullets.push({
+            element: bulletElement,
+            x: startX + playerObj.Width / 2,
+            y: startY + playerObj.Height / 2,
+            dx: dxNorm * shopItems.C96.speed,
+            dy: dyNorm * shopItems.C96.speed,
+            damage: shopItems.C96.damage
+        })
+    }
 }
 
 const help = () => {
@@ -196,8 +209,15 @@ const startGame = () => {
         }),
         menu = document.getElementById("menu")
 
-    menu.remove()
+    const inventory = document.getElementById("inventory"),
+        defaultWeapon = Object.assign(document.createElement("img"), {
+            id: "itemImage",
+            src: "./assets/FN45.png"
+        })
+    inventory.append(defaultWeapon)
+    inventory.style.visibility = "visible"
     document.body.append(playerElement, runInfo, ready, shop)
+    menu.remove()
 
     //event listeners
     document.addEventListener("keydown", function (e) {
@@ -213,10 +233,10 @@ const startGame = () => {
     document.addEventListener("mousedown", function (e) {
         mouseObj.buttonHeld = true
 
-        attack(playerObj.X, playerObj.Y, mouseObj.X, mouseObj.Y)
+        attack(playerObj.Weapon, playerObj.X, playerObj.Y, mouseObj.X, mouseObj.Y)
 
         bulletObj.fireRateInterval = setInterval(() => {
-            if (mouseObj.buttonHeld) attack(playerObj.X, playerObj.Y, mouseObj.X, mouseObj.Y)
+            if (mouseObj.buttonHeld) attack(playerObj.Weapon, playerObj.X, playerObj.Y, mouseObj.X, mouseObj.Y)
         }, bulletObj.fireRate);
     })
     document.addEventListener("mouseup", function (e) {
@@ -240,6 +260,14 @@ const startGame = () => {
         if (pressedKeys["a"] || pressedKeys["ArrowLeft"]) playerObj.X -= playerObj.Speed
         if (pressedKeys["s"] || pressedKeys["ArrowDown"]) playerObj.Y += playerObj.Speed
         if (pressedKeys["d"] || pressedKeys["ArrowRight"]) playerObj.X += playerObj.Speed
+        if (pressedKeys["1"]) playerObj.Weapon = playerObj.Weapons[0]
+        if (pressedKeys["2"]) playerObj.Weapon = playerObj.Weapons[1]
+        if (pressedKeys["3"]) playerObj.Weapon = playerObj.Weapons[2]
+        if (pressedKeys["4"]) playerObj.Weapon = playerObj.Weapons[3]
+        if (pressedKeys["5"]) playerObj.Weapon = playerObj.Weapons[4]
+        if (pressedKeys["6"]) playerObj.Weapon = playerObj.Weapons[5]
+        if (pressedKeys["7"]) playerObj.Weapon = playerObj.Weapons[6]
+        console.log(playerObj.Weapon);
 
         //stop player from going out of bound
         if (playerObj.X < 0) playerObj.X = 0
