@@ -5,17 +5,60 @@
     user-select: none;
 }
 
-body, html {
+body,
+html {
     height: 100vh;
 }
 
-.Mini-Nav {
-
+#main-container {
+    display: flex;
+    justify-content: center;
 }
 
-.Nav {
+#profile-select {
+    display: flex;
+    align-items: center;
+    background-color: #333;
+    width: fit-content;
+    border-radius: 4px;
+    margin-top: 50px;
+    padding: 5px;
 }
 
+#profile-select option {
+    background-color: darkgray;
+}
 
-.Main-Container {
+#profile-pic {
+    background-image: url("https://placeholder.pics/svg/12x12/DEDEDE/30E7FF-00025f");
+    width: 50px;
+    height: 50px;    
+    padding: 20px;
+    border-radius: 512px;
+    border: 2px solid white;
+    margin-right: 8px;
+}
+
+#select-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+#user-select {
+    appearance: none;
+    background-color: transparent;
+    border: none;
+    color: white;
+    padding-right: 20px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.dropdown-arrow {
+    position: absolute;
+    right: 0;
+    pointer-events: none;
+    font-size: 10px;
+    color:  white;
 }
