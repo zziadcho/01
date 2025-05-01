@@ -31,4 +31,3 @@ const Home = () => {
 const Friends = () => {
     return "<h1>Friends List</h1>"
 }
-

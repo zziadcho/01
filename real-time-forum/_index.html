@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Forum API Test</title>
+</head>
+<body>
+    <h1>Forum Posts</h1>
+    <div id="posts"></div>
+
+    <script>
+        async function fetchPosts() {
+            try {
+                const response = await fetch('/api/posts')
+                const posts = await response.json()
+                
+                const postsContainer = document.getElementById('posts')
+                posts.forEach(post => {
+                    const postElement = document.createElement('div')
+                    postElement.innerHTML = `
+                        <h3>${post.title}</h3>
+                        <p>${post.content}</p>
+                        <hr>
+                    `
+                    postsContainer.appendChild(postElement)
+                })
+            } catch (error) {
+                console.error('error fetching:', error)
+            }
+        }
+
+        fetchPosts()
+    </script>
+</body>
+</html>
