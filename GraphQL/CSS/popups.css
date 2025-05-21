@@ -1,0 +1,17 @@
+#popups {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    gap: 10px;
+    top: 15px;
+    right: 25px;
+}
+
+#err-403, #err-401 {
+    border-radius: 20px;
+    padding: 10px 20px;
+    color: rgb(255, 72, 72);
+    background-color: rgb(157, 18, 18);
+    font-size: 16px;
+    font-weight: 600;
+}
