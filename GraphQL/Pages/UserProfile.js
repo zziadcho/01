@@ -9,17 +9,17 @@ export const UserProfile = async () => {
 
     // const firstname = response.data.user[0].firstName
     // const lastname = response.data.user[0].lastName
+    // const container
 
-    const container = Constructor("div", { "id": "grid-container" }, source)
+    const grid = Constructor("div", { id: "grid" }, source)
+    const topBar = Constructor("div", { id: "top-bar" }, grid)
 
-    const topBar = Constructor("div", { "id": "top-bar" }, container)
-    Constructor("button", { "id": "back-button", "textContent": "Back" }, topBar)
-    Constructor("h3", { "id": "title", "textContent": "Ready to go" }, topBar)
-    Constructor("button", { "id": "done-button", "textContent": "Done" }, topBar)
+    const backbutton = Constructor("button", { id: "back-button", class : "material-symbols-outlined", textContent : "chevron_left"}, topBar)
+    Constructor("h3", { id: "title", textContent: "Ready to go" }, topBar)
+    Constructor("button", { id: "placeholder" }, topBar)
 
-    const innerTitle = Constructor("div", { "id": "inner-title", "textContent": "You're ready to go!" }, container)
+    const innerTitle = Constructor("div", { id: "inner-title", "textContent": "You're ready to go!" }, grid)
     Constructor("p", { "textContent": "You can now view your information:" }, innerTitle)
-    const grid = Constructor("div", { "id": "grid" }, container)
 
     const iconData = [
         { icon: "equalizer", text: "Your Level" },
@@ -36,6 +36,7 @@ export const UserProfile = async () => {
         const iconGroup = Constructor("div", { class: "icon-group" }, grid)
 
         Constructor("span", {
+            id: "icon",
             class: "material-symbols-outlined",
             textContent: item.icon
         }, iconGroup)
@@ -44,5 +45,11 @@ export const UserProfile = async () => {
             class: "icon-text",
             textContent: item.text
         }, iconGroup)
+    })
+
+    const icons = document.querySelectorAll("icon")
+
+    icons.addEventListener("click", function() {
+        console.log("xd");
     })
 }

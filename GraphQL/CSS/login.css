@@ -16,10 +16,19 @@ input {
     color: white;
     border-color: transparent;
     border-radius: 5px;
+    opacity: 0.8;
 }
 
-input:focus {
-    border: 1px solid #FF976C;
+#username-input:focus {
+    outline: none;
+    border: 1px solid #670039;
+    opacity: 1;
+}
+
+#password-input:focus {
+    opacity: 1;
+    outline: none;
+    border: 1.5px solid #350180;
 }
 
 #login-form button {

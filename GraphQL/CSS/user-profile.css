@@ -1,21 +1,19 @@
-#grid-container {
-    display: flex;
-    flex-direction: column;
-    width: 1200px;
-    background-color: #F2F1EF;
-    height: auto;
-    margin-top: 100px;
-    border-radius: 25px 25px 0 0;
-}
-
 #grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: repeat(2, 1fr);
+    grid-template-rows: repeat(4, 1fr);
     justify-content: center;
     align-items: center;
-    row-gap: 70px;
-    margin-bottom: 50px;
+    background-color: rgb(0, 0, 0, 0.5);
+    border-radius: 50px 50px 0 0;
+    border-right: 1px solid #670039;
+    border-bottom: 1px solid #350180;
+    border-left: 1px solid #350180;
+    margin: 125px 50px;
+    width: 1280px;
+    row-gap: 50px;
+    padding-bottom: 75px;
+
 }
 
 .icon-group {
@@ -25,57 +23,68 @@
     align-items: center;
 }
 
+.icon-text {
+    color: white;
+}
+
 .material-symbols-outlined {
     font-size: 48px;
     cursor: pointer;
     padding-bottom: 20px;
+    color: white;
 }
 
 #top-bar {
+    grid-column: 1 / 5;
     display: flex;
     align-items: center;
     justify-content: space-between;
     height: 75px;
-    background: #545454;
-    background: linear-gradient(180deg, rgba(84, 84, 84, 1) 0%, rgba(38, 38, 38, 1) 100%);
-    border-radius: 10px 10px 0 0;
+    background: #350180;
+    background: linear-gradient(90deg, rgba(53, 1, 128, 1) 0%, rgba(103, 0, 57, 1) 100%);
+    border-radius: 30px 30px 0 0;
     color: lightgray;
     font-weight: 300;
     font-size: 18px;
 }
 
-#top-bar button {
-    margin: 0 20px;
-    border-radius: 10px;
-    border: 1px solid black;
-    width: 60px;
-    height: 35px;
-}
 
-#done-button {
-    background: #44cf59;
-    background: linear-gradient(180deg, rgba(68, 207, 89, 1) 0%, rgba(61, 153, 73, 1) 100%);
-    color: white;
-    font-weight: 500;
+#placeholder {
+    visibility: hidden;
+    margin-right: 20px;
 }
 
 #back-button {
-    background: #545454;
-    background: linear-gradient(180deg, rgba(84, 84, 84, 1) 0%, rgba(38, 38, 38, 1) 100%);
-    color: lightgray;
-    font-weight: 500;
+    text-align: center;
+    padding: 0 2px 0 0;
+    margin-left: 20px;
+    height: 35px;
+    width: 35px;
+    color: white;
+    font-size: 32px;
+    background-color: transparent;
+    border: 1px solid lightgray;
+    border-radius: 512px;
+}
+
+#back-button span {
+    font-size: 16px;
 }
 
 #inner-title {
-    padding: 30px 45px;
+    padding: 0 45px;
     font-size: 36px;
     font-weight: 600;
-    color: rgb(70, 70, 70);
+    color: white;
+    opacity: 0.8;
+    grid-column: 1 / 5;
+    grid-row: 2;
 }
 
 #inner-title p {
     font-size: 18px;
     font-weight: 500;
-    color: rgb(70, 70, 70);
+    color: white;
+    opacity: 0.8;
     padding: 10px 0 0 5px;
 }
